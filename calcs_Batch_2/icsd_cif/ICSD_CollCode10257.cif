@@ -1,0 +1,70 @@
+
+#(C) 2021 by FIZ Karlsruhe - Leibniz Institute for Information Infrastructure.  All rights reserved.
+data_10257-ICSD
+_database_code_ICSD 10257
+_audit_creation_date 1980-01-01
+_audit_update_record 2015-08-01
+_chemical_name_common 'Trilithium phosphate(V)'
+_chemical_formula_structural 'Li3 (P O4)'
+_chemical_formula_sum 'Li3 O4 P1'
+_chemical_name_structure_type Enargite#Cu3AsS4
+_exptl_crystal_density_diffrn 2.47
+_citation_title
+'The crystal structure of twinned lowtemperature lithium phosphate'
+loop_
+_citation_id
+_citation_journal_full
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Inorganic Chemistry' 1967 6 119 125 INOCAJ
+loop_
+_citation_author_citation_id
+_citation_author_name
+primary 'Keffer, C.'
+primary 'Mighell, A.D.'
+primary 'Mauer, F.'
+primary 'Swanson, H.'
+primary 'Block, S.'
+_cell_length_a 6.115(1)
+_cell_length_b 5.2394(11)
+_cell_length_c 4.8554(10)
+_cell_angle_alpha 90.
+_cell_angle_beta 90.
+_cell_angle_gamma 90.
+_cell_volume 155.56
+_cell_formula_units_Z 2
+_space_group_name_H-M_alt 'P m n 21'
+_space_group_IT_number 31
+loop_
+_space_group_symop_id
+_space_group_symop_operation_xyz
+1 'x+1/2, -y, z+1/2'
+2 '-x+1/2, -y, z+1/2'
+3 '-x, y, z'
+4 'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+P5+ 5
+O2- -2
+Li1+ 1
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_B_iso_or_equiv
+_atom_site_occupancy
+P1 P5+ 2 a 0 0.82430(42) 0 0.034(32) 1.
+O1 O2- 4 b 0.20777(78) 0.68676(84) 0.8961(12) 0.556(75) 1.
+O2 O2- 2 a 0 0.1052(12) 0.9004(18) 0.273(97) 1.
+O3 O2- 2 a 0.5 0.1814(15) 0.8172(16) 0.47(12) 1.
+Li1 Li1+ 4 b 0.2481(20) 0.3277(21) 0.9860(41) 0.98(18) 1.
+Li2 Li1+ 2 a 0.5 0.8428(32) 0.9893(56) 0.86(24) 1.
+#End of TTdata_10257-ICSD

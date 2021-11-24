@@ -1,0 +1,68 @@
+
+#(C) 2021 by FIZ Karlsruhe - Leibniz Institute for Information Infrastructure.  All rights reserved.
+data_430333-ICSD
+_database_code_ICSD 430333
+_audit_creation_date 2018-02-01
+_chemical_name_common 'Disodium pentasulfide - epsilon'
+_chemical_formula_structural 'Na2 S5'
+_chemical_formula_sum 'Na2 S5'
+_exptl_crystal_density_diffrn 2.16
+_citation_title
+
+;
+Stable crystalline forms of Na polysulfides: experiment versus ab initio
+computational prediction
+;
+loop_
+_citation_id
+_citation_journal_full
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Chemistry - A European Journal' 2016 22 3355 3360 CEUJED
+loop_
+_citation_author_citation_id
+_citation_author_name
+primary 'Mali, Gregor'
+primary 'Patel, Manu U.M.'
+primary 'Mazaj, Matjaz'
+primary 'Dominko, Robert'
+_cell_length_a 7.3737(6)
+_cell_length_b 10.5271(8)
+_cell_length_c 4.0959(3)
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 317.93
+_cell_formula_units_Z 2
+_space_group_name_H-M_alt 'P b a 2'
+_space_group_IT_number 32
+loop_
+_space_group_symop_id
+_space_group_symop_operation_xyz
+1 'x+1/2, -y+1/2, z'
+2 '-x+1/2, y+1/2, z'
+3 '-x, -y, z'
+4 'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+Na1+ 1
+S0+ -0.4
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_B_iso_or_equiv
+_atom_site_occupancy
+Na1 Na1+ 4 c 0.07554(77) -0.28952(61) 0.25 5.2(3) 1
+S1 S0+ 4 c 0.23076(67) 0.00146(42) 0.6681(34) 5.0(1) 1
+S2 S0+ 4 c 0.30266(62) -0.18005(57) 0.7429(24) 5.0(1) 1
+S3 S0+ 2 a 0. 0. 0.3784(38) 5.0(1) 1
+#End of TTdata_430333-ICSD

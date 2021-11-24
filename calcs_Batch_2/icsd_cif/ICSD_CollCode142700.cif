@@ -1,0 +1,95 @@
+
+#(C) 2021 by FIZ Karlsruhe - Leibniz Institute for Information Infrastructure.  All rights reserved.
+data_142700-ICSD
+_database_code_ICSD 142700
+_audit_creation_date 2021-08-01
+_chemical_name_common 'Sodium germanium phosphide (2/3/3)'
+_chemical_formula_structural 'Na2 Ge3 P3'
+_chemical_formula_sum 'Ge3 Na2 P3'
+_exptl_crystal_density_diffrn 3.27
+_diffrn_ambient_temperature 293.
+_citation_title
+
+;
+\(Na_2 Ge_3P_3\) and \(Na_5 Ge_7P_5\) comprising heteroatomic polyanions
+mimicking the structure of fibrous red phosphorus
+;
+loop_
+_citation_id
+_citation_journal_full
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Zeitschrift fuer Anorganische und Allgemeine Chemie' 2020 646 1834 1838
+ZAACAB
+loop_
+_citation_author_citation_id
+_citation_author_name
+primary 'Eickhoff, Henrik'
+primary 'Hlukhyy, Viktor'
+primary 'Fässler, Thomas F.'
+_cell_length_a 17.639(4)
+_cell_length_b 3.6176(7)
+_cell_length_c 11.354(2)
+_cell_angle_alpha 90
+_cell_angle_beta 92.74(3)
+_cell_angle_gamma 90
+_cell_volume 723.68
+_cell_formula_units_Z 4
+_space_group_name_H-M_alt 'C 1 2/m 1'
+_space_group_IT_number 12
+loop_
+_space_group_symop_id
+_space_group_symop_operation_xyz
+1 '-x, y, -z'
+2 '-x, -y, -z'
+3 'x, -y, z'
+4 'x, y, z'
+5 '-x+1/2, y+1/2, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x+1/2, -y+1/2, z'
+8 'x+1/2, y+1/2, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+Ge0+ 0
+P0+ 0
+Na0+ 0
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_U_iso_or_equiv
+_atom_site_occupancy
+Ge1 Ge0+ 4 i 0.32902(5) 0. 0.23652(8) 0.0121(3) 1
+Ge2 Ge0+ 4 i 0.01164(5) 0. 0.20597(8) 0.0135(3) 1
+Ge3 Ge0+ 4 i 0.04261(5) 0. 0.58915(8) 0.0122(3) 1
+P1 P0+ 4 i 0.37327(13) 0. 0.4367(2) 0.0124(5) 1
+P2 P0+ 4 i 0.74939(13) 0. 0.1957(2) 0.0129(5) 1
+P3 P0+ 4 i 0.43726(13) 0. 0.1263(2) 0.0130(5) 1
+Na1 Na0+ 4 i 0.1689(2) 0. 0.3617(4) 0.0233(9) 1
+Na2 Na0+ 4 i 0.1541(2) 0. 0.0362(3) 0.0204(9) 1
+loop_
+_atom_site_aniso_label
+_atom_site_aniso_type_symbol
+_atom_site_aniso_U_11
+_atom_site_aniso_U_22
+_atom_site_aniso_U_33
+_atom_site_aniso_U_12
+_atom_site_aniso_U_13
+_atom_site_aniso_U_23
+Ge1 Ge0+ 0.0147(5) 0.0118(5) 0.0099(5) 0. 0.0004(3) 0.
+Ge2 Ge0+ 0.0153(5) 0.0136(6) 0.0117(5) 0. 0.0009(4) 0.
+Ge3 Ge0+ 0.0159(5) 0.0119(5) 0.0088(5) 0. -0.0006(4) 0.
+P1 P0+ 0.0162(11) 0.0108(12) 0.0100(11) 0. -0.0004(9) 0.
+P2 P0+ 0.0136(11) 0.0110(12) 0.0140(11) 0. -0.0010(9) 0.
+P3 P0+ 0.0173(12) 0.0120(12) 0.0096(11) 0. 0.0015(9) 0.
+Na1 Na0+ 0.031(2) 0.019(2) 0.021(2) 0. 0.0093(17) 0.
+Na2 Na0+ 0.028(2) 0.018(2) 0.0148(18) 0. -0.0035(16) 0.
+#End of TTdata_142700-ICSD
