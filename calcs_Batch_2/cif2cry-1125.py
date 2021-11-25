@@ -79,7 +79,7 @@ def cif_to_crystal(cif_file, dict_bs, basis_type, functional_type):
         if atom_num not in list_atom_num:
             list_atom_num.append(atom_num)
         atom_num_write = s.atomic_numbers[i]
-        if s.atomic_numbers[i] > 18:
+        if s.atomic_numbers[i] > 36:    # depends on basis sets
             atom_num_write = s.atomic_numbers[i] + 200
         format_coord_block = '{:3d}     {:>.12f} {:>.12f} {:>.12f}\n'
         cry += format_coord_block.format(atom_num_write, s.frac_coords[i][0], s.frac_coords[i][1], s.frac_coords[i][2])

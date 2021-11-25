@@ -1,0 +1,34 @@
+#!/bin/bash  --login
+#PBS -N P4S3_62
+#PBS -l walltime=24:00:00
+#PBS -l select=4:ncpus=24:mpiprocs=24  
+##PBS -P Personal 
+## Solid electrolytes
+##PBS -P 11001317
+## InGaN project
+#PBS -P 11001835 
+#PBS -m abe
+#PBS -M mseyuh@nus.edu.sg
+##PBS -k oe 
+
+
+# number of cores per node used
+export NCORES=24
+# number of processes
+export NPROCESSES=96
+
+# Make sure any symbolic links are resolved to absolute path
+export PBS_O_WORKDIR=$(readlink -f $PBS_O_WORKDIR)
+
+# Set the number of threads to 1
+#   This prevents any system libraries from automatically 
+#   using threading.
+export OMP_NUM_THREADS=1
+module load composerxe/2017.0.098 
+env
+
+cd $PBS_O_WORKDIR
+echo Initial list of module loaded
+module list -l
+module load  bin
+/home/users/nus/mseyuh/bin/CRYSTAL17/v2/runcryP P4S3_62 
