@@ -1,0 +1,90 @@
+
+#(C) 2021 by FIZ Karlsruhe - Leibniz Institute for Information Infrastructure.  All rights reserved.
+data_60774-ICSD
+_database_code_ICSD 60774
+_audit_creation_date 1988-02-22
+_audit_update_record 2013-02-01
+_chemical_name_common 'Trilithium heptaphosphide'
+_chemical_formula_structural 'Li3 P7'
+_chemical_formula_sum 'Li3 P7'
+_exptl_crystal_density_diffrn 2.02
+_citation_title
+'Trilithiumheptaphosphid Li3P7: Darstellung, Struktur und Eigenschaften'
+loop_
+_citation_id
+_citation_journal_full
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Zeitschrift fuer Anorganische und Allgemeine Chemie (1950) (DE)' 1986
+539 95 109 ZAACAB
+loop_
+_citation_author_citation_id
+_citation_author_name
+primary 'Manriquez, V.'
+primary 'Hoenle, W.'
+primary 'von Schnering, H.G.'
+_cell_length_a 9.742(1)
+_cell_length_b 10.535(1)
+_cell_length_c 7.596(1)
+_cell_angle_alpha 90.
+_cell_angle_beta 90.
+_cell_angle_gamma 90.
+_cell_volume 779.59
+_cell_formula_units_Z 4
+_space_group_name_H-M_alt 'P 21 21 21'
+_space_group_IT_number 19
+loop_
+_space_group_symop_id
+_space_group_symop_operation_xyz
+1 '-x, y+1/2, -z+1/2'
+2 'x+1/2, -y+1/2, -z'
+3 '-x+1/2, -y, z+1/2'
+4 'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+P0+ -0.43
+Li1+ 1
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_B_iso_or_equiv
+_atom_site_occupancy
+P1 P0+ 4 a -.0712(1) 0.2338(1) 0.5324(2) . 1.
+P2 P0+ 4 a -.2174(1) 0.4960(1) 0.3708(2) . 1.
+P3 P0+ 4 a 0.0732(1) 0.3811(1) 0.1827(1) . 1.
+P4 P0+ 4 a -.1251(1) 0.3194(1) 0.2803(1) . 1.
+P5 P0+ 4 a 0.0499(1) 0.3866(1) 0.6362(1) . 1.
+P6 P0+ 4 a -.0537(1) 0.5648(1) 0.5335(1) . 1.
+P7 P0+ 4 a 0.1373(1) 0.4926(1) 0.4054(2) . 1.
+Li1 Li1+ 4 a -.3007(8) 0.1942(7) 0.094(1) . 1.
+Li2 Li1+ 4 a -.0253(9) 0.5150(8) -.064(1) . 1.
+Li3 Li1+ 4 a -.3068(9) 0.3160(8) 0.651(1) . 1.
+loop_
+_atom_site_aniso_label
+_atom_site_aniso_type_symbol
+_atom_site_aniso_U_11
+_atom_site_aniso_U_22
+_atom_site_aniso_U_33
+_atom_site_aniso_U_12
+_atom_site_aniso_U_13
+_atom_site_aniso_U_23
+P1 P0+ 0.026 0.0184 0.0277 0.0023 -.0016 -.0011
+P2 P0+ 0.021 0.0231 0.03 -.0032 -.0035 0.0041
+P3 P0+ 0.0219 0.0278 0.022 -.0037 0.0033 -.0017
+P4 P0+ 0.0194 0.0194 0.0237 -.0028 -.002 -.0008
+P5 P0+ 0.0245 0.0233 0.0208 0.0006 -.0036 -.0011
+P6 P0+ 0.0254 0.0182 0.0245 -.003 0 0.0004
+P7 P0+ 0.021 0.0253 0.0258 -.0019 0.0004 -.0055
+Li1 Li1+ 0.0338 0.035 0.0326 -.0027 -.0022 -.0049
+Li2 Li1+ 0.0427 0.0292 0.0604 -.0061 -.0159 0.0004
+Li3 Li1+ 0.0411 0.0402 0.0402 0.0013 0.0005 0.0043
+#End of TTdata_60774-ICSD
