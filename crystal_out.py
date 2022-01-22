@@ -83,7 +83,10 @@ class crystalOut():
             "alpha": 0,"beta" : 0,"gamma": 0,
             "volume": 0,"density": 0,
             "total_energy" : 0,
-            "atom_lines": ""
+            "atom_lines": "",
+            "intensities": {
+            "polycrystalline_intensities": {}
+            }
         }
 
         self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group(self.file)
@@ -92,6 +95,8 @@ class crystalOut():
         self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1]) 
         self.parsed_data["total_energy"] = float(energy)
         self.parsed_data["atom_lines"] = atom_lines
+        self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_intensities(self.file)
+        
         self.file.close()
 
     def get_space_group(self, file):
@@ -160,4 +165,19 @@ class crystalOut():
                 energy = energy_line[26:48].strip()
             return cell, volume_density, energy, atom_lines
 
+    def get_intensities(self, file):
+        """
+        only polycrystalline isotropic intensities (I_tot only), 
+        TODO: add others and add single crystal 
+        """
+        readUntil(self.file, "POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)")
+        for i in range(4):
+            line = self.file.readline()
 
+        data = {}
+        while not line.isspace():
+            fields = line.split()
+            data[float(fields[2])] = float(fields[5])
+            line = self.file.readline()
+        
+        return data 
