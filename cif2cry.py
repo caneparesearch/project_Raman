@@ -8,7 +8,6 @@ from pymatgen import Structure
 from pymatgen.core.periodic_table import Element
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from itertools import combinations
-print('hello')
 
 def yaml_basis_set(path_bs):
     dict_bs = {}
