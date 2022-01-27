@@ -2,7 +2,7 @@ import glob
 import sys
 
 # future: atomic species oxidation states 
-
+print('test')
 def readUntil(f, s):
     while True:
         line = f.readline()
