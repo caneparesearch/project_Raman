@@ -9,6 +9,7 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from itertools import combinations
 
+
 def yaml_basis_set(path_bs):
     dict_bs = {}
     for file_bs in os.listdir(path_bs):
