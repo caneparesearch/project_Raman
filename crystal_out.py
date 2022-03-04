@@ -1,5 +1,6 @@
 import glob
 import sys
+from pymatgen.core import Lattice, Structure
 
 # future: atomic species oxidation states 
 
@@ -97,6 +98,12 @@ class crystalOut():
         self.parsed_data["atom_lines"] = atom_lines
         self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_intensities(self.file)
         
+        self.atoms, self.coords = self.get_atoms_coords()
+        self.lattice = Lattice.from_parameters(a=self.parsed_data['a'], b=self.parsed_data['b'], c=self.parsed_data['c'], 
+                                        alpha =self.parsed_data['alpha'], 
+                                        beta=self.parsed_data['beta'], 
+                                        gamma=self.parsed_data['gamma'])
+        self.structure = Structure(self.lattice, self.atoms, self.coords)
         self.file.close()
 
     def get_space_group(self, file):
@@ -164,6 +171,21 @@ class crystalOut():
             if len(energy_line) > 48:
                 energy = energy_line[26:48].strip()
             return cell, volume_density, energy, atom_lines
+
+    def get_atoms_coords(self):
+        atom_lines = self.parsed_data["atom_lines"].split("\n") 
+        all_atoms = []
+        all_coords = []
+        for line in atom_lines:
+            if line:
+                s = line.split(" ")
+                atom = s[1]
+                coords = []
+                for coord in s[2:5]:
+                    coords.append(float(coord))
+                all_atoms.append(str(atom))
+                all_coords.append(coords)
+        return all_atoms, all_coords
 
     def get_intensities(self, file):
         """
