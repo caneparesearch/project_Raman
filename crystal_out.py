@@ -5,6 +5,10 @@ from pymatgen.core import Lattice, Structure
 # future: atomic species oxidation states 
 
 def readUntil(f, s):
+    """
+    f: filename
+    s: string to read until
+    """
     while True:
         line = f.readline()
         if len(line) == 0:
