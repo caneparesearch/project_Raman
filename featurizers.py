@@ -6,6 +6,7 @@ from crystal_out import crystalOut
 from dscribe.descriptors import SOAP, ACSF
 from pymatgen.io.ase import AseAtomsAdaptor
 from matminer.featurizers.site import CrystalNNFingerprint
+from matminer.featurizers.structure import SiteStatsFingerprint
 
 Na3PO4_114 = crystalOut("crystal17_output_files/calc-Na3PO4_114_icsd97205_tzvp_PBE0/Na3PO4_114.out")
 atom_list = ["Na", "P", "O"]
@@ -38,6 +39,11 @@ cnnf = CrystalNNFingerprint.from_preset("ops")
 site_1_features = cnnf.featurize(Na3PO4_114.structure, 0) 
 print(cnnf.feature_labels())
 print(site_1_features)
+
+full_cnnf = SiteStatsFingerprint.from_preset("CrystalNNFingerprint_ops")
+cnnf_features = full_cnnf.featurize(Na3PO4_114.structure)
+print(cnnf_features)
+print(len(site_1_features), len(cnnf_features))
 
 ############################################
 # SOAP featurizer from matminer doesnt work;
