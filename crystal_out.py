@@ -2,7 +2,8 @@
 
 import glob
 import sys
-from pymatgen.core import Lattice, Structure
+import numpy as np
+from pymatgen.core import Lattice, Structure, spectrum
 
 # future: atomic species oxidation states 
 
@@ -92,7 +93,7 @@ class crystalOut():
             "total_energy" : 0,
             "atom_lines": "",
             "intensities": {
-            "polycrystalline_intensities": {}
+            "polycrystalline_intensities": []
             }
         }
 
@@ -110,6 +111,8 @@ class crystalOut():
                                         beta=self.parsed_data['beta'], 
                                         gamma=self.parsed_data['gamma'])
         self.structure = Structure(self.lattice, self.atoms, self.coords)
+        self.intensities = spectrum.Spectrum(self.parsed_data["intensities"]["polycrystalline_intensities"][:,0], 
+                            self.parsed_data["intensities"]["polycrystalline_intensities"][:,1])
         self.file.close()
 
     def get_space_group(self, file):
@@ -195,6 +198,7 @@ class crystalOut():
 
     def get_intensities(self, file):
         """
+        returns the intensities as a numpy array with format [frequency intensity]
         only polycrystalline isotropic intensities (I_tot only), 
         TODO: add others and add single crystal 
         """
@@ -202,10 +206,12 @@ class crystalOut():
         for i in range(4):
             line = self.file.readline()
 
-        data = {}
+        array = []
         while not line.isspace():
             fields = line.split()
-            data[float(fields[2])] = float(fields[5])
+            frequency = float(fields[2])
+            tot_intensity = float(fields[5])
+            array.append([frequency, tot_intensity])
             line = self.file.readline()
         
-        return data 
+        return np.array(array)
