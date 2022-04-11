@@ -3,7 +3,7 @@
 import glob
 import sys
 import numpy as np
-from pymatgen.core import Lattice, Structure, spectrum
+from pymatgen.core import Lattice, Structure
 
 # future: atomic species oxidation states 
 
@@ -111,8 +111,7 @@ class crystalOut():
                                         beta=self.parsed_data['beta'], 
                                         gamma=self.parsed_data['gamma'])
         self.structure = Structure(self.lattice, self.atoms, self.coords)
-        self.intensities = spectrum.Spectrum(self.parsed_data["intensities"]["polycrystalline_intensities"][:,0], 
-                            self.parsed_data["intensities"]["polycrystalline_intensities"][:,1])
+        self.intensities = self.parsed_data["intensities"]["polycrystalline_intensities"]
         self.file.close()
 
     def get_space_group(self, file):
