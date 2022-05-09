@@ -4,6 +4,7 @@ import glob
 import sys
 import numpy as np
 from pymatgen.core import Lattice, Structure
+import itertools
 
 # future: atomic species oxidation states 
 
@@ -18,6 +19,8 @@ def readUntil(f, s):
             return ""
         if s in line:
             return line.strip()
+
+xyz_to_num ={"X":0, "Y": 1, "Z": 2}
 
 spacegroups = {
     "P 1": 1, "P -1": 2, "P 2": 3, "P 21": 4, "C 2": 5, "P M": 6, "P C": 7,
@@ -97,13 +100,13 @@ class crystalOut():
             }
         }
 
-        self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group(self.file)
-        cell, volume_density, energy, atom_lines = self.get_cell_params(self.file)
+        self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group()
+        cell, volume_density, energy, atom_lines = self.get_cell_params()
         self.parsed_data["a"], self.parsed_data["b"], self.parsed_data["c"], self.parsed_data["alpha"], self.parsed_data["beta"], self.parsed_data["gamma"] = float(cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
         self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1]) 
         self.parsed_data["total_energy"] = float(energy)
         self.parsed_data["atom_lines"] = atom_lines
-        self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_intensities(self.file)
+        self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_intensities()
         
         self.atoms, self.coords = self.get_atoms_coords()
         self.lattice = Lattice.from_parameters(a=self.parsed_data['a'], b=self.parsed_data['b'], c=self.parsed_data['c'], 
@@ -112,9 +115,14 @@ class crystalOut():
                                         gamma=self.parsed_data['gamma'])
         self.structure = Structure(self.lattice, self.atoms, self.coords)
         self.intensities = self.parsed_data["intensities"]["polycrystalline_intensities"]
+        self.dielectric_tensor, self.vibrational_contributions = self.get_dielectric_tensor()
+        self.second_electric_susceptibility = self.get_second_electric_susceptibiliy()
+        self.third_electric_susceptibility = self.get_third_electric_susceptibiliy()
+        self.born_charge = self.get_born_charge()
+        self.thermodynamic_terms = self.get_thermodynamic_terms()
         self.file.close()
 
-    def get_space_group(self, file):
+    def get_space_group(self):
         sg = readUntil(self.file, "SPACE GROUP")
         if len(sg) > 0:
             sg_name = sg.split(":")[-1].strip()
@@ -134,15 +142,14 @@ class crystalOut():
                 self.file.seek(0)
         return sg_name, sg_num
 
-    def get_cell_params(self, file):
+    def get_cell_params(self):
         pos = self.file.tell()
         if len(readUntil(self.file, "TRANSFORMATION MATRIX PRIMITIVE-CRYSTALLOGRAPHIC CELL")) > 0:
             crystCell = True
         else:
             crystCell = False
         self.file.seek(pos)
-        
-        counter = 1
+
         while True:
             if crystCell:
                 line = readUntil(self.file, "CRYSTALLOGRAPHIC CELL (VOLUME=")
@@ -195,7 +202,7 @@ class crystalOut():
                 all_coords.append(coords)
         return all_atoms, all_coords
 
-    def get_intensities(self, file):
+    def get_intensities(self):
         """
         returns the intensities as a numpy array with format [frequency intensity]
         only polycrystalline isotropic intensities (I_tot only), 
@@ -212,5 +219,104 @@ class crystalOut():
             tot_intensity = float(fields[5])
             array.append([frequency, tot_intensity])
             line = self.file.readline()
-        
+        self.file.seek(0)
         return np.array(array)
+
+    def get_dielectric_tensor(self):
+        dielectric_tensor = np.zeros([3,3])
+        vibrational_contributions = {}
+        readUntil(self.file, "VIBRATIONAL CONTRIBUTIONS TO THE STATIC DIELECTRIC TENSOR (OSCILLATOR")
+        for i in range(18):
+            line = self.file.readline()
+        while "SUM TENSOR OF THE VIBRATIONAL CONTRIBUTIONS TO THE' STATIC DIELECTRIC     TENSOR" not in line:
+            tensor = np.zeros([3,3])
+            line = line.split()
+            mode = int(line[0])
+            tensor[0,:] = [float(i) for i in line[1:]]
+            for i in range(1,3):
+                line = self.file.readline().split()
+                tensor[i,:] = [float(i) for i in line]
+            vibrational_contributions[mode] = tensor
+            line = self.file.readline()
+            line = self.file.readline()
+        line = self.file.readline()
+        for i in range(3):
+            line = self.file.readline().split()
+            dielectric_tensor[i,:] = [float(i) for i in line]
+        self.file.seek(0)
+        return dielectric_tensor, vibrational_contributions
+
+    def get_second_electric_susceptibiliy(self):
+        tensor = np.zeros([3,3,3])
+        readUntil(self.file, "FIRST HYPERPOLARIZABILITY (BETA) AND SECOND ELECTRIC SUSCEPTIBILITY (CHI(2))")
+        for i in range(5):
+            self.file.readline()
+        for i in range(10):
+            line = self.file.readline().split()
+            perm = list(itertools.permutations(line[0]))
+            for p in perm:
+                index1 = xyz_to_num[p[0]]
+                index2 = xyz_to_num[p[1]]
+                index3 = xyz_to_num[p[2]]
+                tensor[index1,index2,index3] = float(line[4])
+        self.file.seek(0)
+        return tensor
+    
+    def get_third_electric_susceptibiliy(self):
+        tensor = np.zeros([3,3,3,3])
+        readUntil(self.file, "SECOND HYPERPOLARIZABILITY (GAMMA) AND THIRD ELECTRIC SUSCEPTIBILITY (CHI(3))")
+        for i in range(5):
+            self.file.readline()
+        for i in range(15):
+            line = self.file.readline().split()
+            perm = list(itertools.permutations(line[0]))
+            for p in perm:
+                index1 = xyz_to_num[p[0]]
+                index2 = xyz_to_num[p[1]]
+                index3 = xyz_to_num[p[2]]
+                index4 = xyz_to_num[p[3]]
+                tensor[index1,index2,index3,index4] = float(line[4])
+        self.file.seek(0)
+        return tensor
+
+    def get_born_charge(self):
+        born_charge = {}
+        readUntil(self.file, "ATOMIC BORN CHARGE TENSOR (UNITS OF e, ELECTRON CHARGE).")
+        for i in range(3):
+            line = self.file.readline()
+        while "DYNAMIC CHARGE" in line:
+            line = line.split()
+            atom_no = int(line[1])
+            atom_sym = line[2]
+            dynamic_charge = float(line[5])
+            tensor = np.zeros([3,3])
+            self.file.readline()
+            self.file.readline()
+            for i in range(3):
+                line = self.file.readline().split()
+                tensor[i,:] = [float(i) for i in line[1:]]
+            born_charge[atom_no] = {}
+            born_charge[atom_no]["Atomic symbol"] = atom_sym
+            born_charge[atom_no]["Dynamic Charge"] = dynamic_charge
+            born_charge[atom_no]["Born Charge"] = tensor
+            line = self.file.readline()
+            line = self.file.readline()
+        self.file.seek(0)
+        return born_charge
+    
+    def get_thermodynamic_terms(self):
+        thermo = {}
+        readUntil(self.file, "HARMONIC VIBRATIONAL CONTRIBUTIONS TO THERMODYNAMIC FUNCTIONS AT GIVEN")
+        for i in range(9):
+            self.file.readline()
+        line = self.file.readline().split()
+        thermo["EL"] = float(line[3])
+        line = self.file.readline().split()
+        thermo["ZPE"] = float(line[3])
+        line = readUntil(self.file, "PV").split()
+        thermo["PV"] = float(line[3])
+        line = self.file.readline().split()
+        thermo["TS"] = float(line[3])
+        line = readUntil(self.file, "HEAT CAPACITY").split()
+        thermo["HEAT CAPACITY"] = float(line[4])
+        return thermo

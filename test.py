@@ -1,17 +1,11 @@
 from crystal_out import crystalOut
-from Spectra import Spectra
-import numpy as np
-import matplotlib.pyplot as plt
 
 Na3PS4 = crystalOut("crystal17_output_files/calc-Na3PS4_114_icsd121566_tzvp_PBE0/Na3PS4_114.out")
-intensities = Na3PS4.intensities
-#print(intensities)
-normal_spectra = Spectra(intensities[:,0], intensities[:,1])
-fig = normal_spectra.plot_spectra()
-print(normal_spectra)
-
-l_spectra = normal_spectra.lorentzian_transform(0.5)
-
-print(l_spectra)
-fig = l_spectra.plot_spectra()
-plt.show()
+print("structure:\n", Na3PS4.structure)
+print("space group", Na3PS4.parsed_data["space_group"])
+print("vibrational contributions {mode:tensor}:\n", Na3PS4.vibrational_contributions)
+print("dielectric tensor:\n", Na3PS4.dielectric_tensor)
+print("second electric susceptibility:\n", Na3PS4.second_electric_susceptibility)
+print("third electric susceptibility:\n", Na3PS4.third_electric_susceptibility)
+print("born charge:\n", Na3PS4.born_charge)
+print("thermodynamic terms:\n", Na3PS4.thermodynamic_terms)
