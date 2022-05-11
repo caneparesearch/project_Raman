@@ -233,6 +233,7 @@ class crystalOut():
             for i in range(0,10,3):
                 atomic_masses[int(fields[i])] = (fields[i+1], float(fields[i+2]))
             line = self.file.readline()
+        self.file.seek(0)
         return atomic_masses
     
     def get_dielectric_tensor(self):
