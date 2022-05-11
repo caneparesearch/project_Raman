@@ -114,6 +114,7 @@ class crystalOut():
                                         beta=self.parsed_data['beta'], 
                                         gamma=self.parsed_data['gamma'])
         self.structure = Structure(self.lattice, self.atoms, self.coords)
+        self.atomic_masses = self.get_atomic_mass()
         self.intensities = self.parsed_data["intensities"]["polycrystalline_intensities"]
         self.dielectric_tensor, self.vibrational_contributions = self.get_dielectric_tensor()
         self.second_electric_susceptibility = self.get_second_electric_susceptibiliy()
@@ -222,6 +223,18 @@ class crystalOut():
         self.file.seek(0)
         return np.array(array)
 
+    def get_atomic_mass(self):
+        readUntil(self.file, "ATOMS ISOTOPIC MASS (AMU) FOR FREQUENCY CALCULATION")
+        line = self.file.readline()
+        line = self.file.readline()
+        atomic_masses = {}
+        while not line.isspace():
+            fields = line.split()
+            for i in range(0,10,3):
+                atomic_masses[int(fields[i])] = (fields[i+1], float(fields[i+2]))
+            line = self.file.readline()
+        return atomic_masses
+    
     def get_dielectric_tensor(self):
         dielectric_tensor = np.zeros([3,3])
         vibrational_contributions = {}

@@ -3,6 +3,7 @@ from crystal_out import crystalOut
 Na3PS4 = crystalOut("crystal17_output_files/calc-Na3PS4_114_icsd121566_tzvp_PBE0/Na3PS4_114.out")
 print("structure:\n", Na3PS4.structure)
 print("space group", Na3PS4.parsed_data["space_group"])
+print("atomic masses", Na3PS4.atomic_masses)
 print("vibrational contributions {mode:tensor}:\n", Na3PS4.vibrational_contributions)
 print("dielectric tensor:\n", Na3PS4.dielectric_tensor)
 print("second electric susceptibility:\n", Na3PS4.second_electric_susceptibility)
