@@ -230,8 +230,10 @@ class crystalOut():
         atomic_masses = {}
         while not line.isspace():
             fields = line.split()
-            for i in range(0,10,3):
+            i = 0
+            while i < len(fields):
                 atomic_masses[int(fields[i])] = (fields[i+1], float(fields[i+2]))
+                i += 3
             line = self.file.readline()
         self.file.seek(0)
         return atomic_masses

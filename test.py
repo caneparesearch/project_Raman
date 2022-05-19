@@ -1,6 +1,6 @@
 from crystal_out import crystalOut
 
-Na3PS4 = crystalOut("crystal17_output_files/calc-Na3PS4_114_icsd121566_tzvp_PBE0/Na3PS4_114.out")
+Na3PS4 = crystalOut(".\crystal17_output_files\calc-Te3As2_12_icsd18208_tzvp_PBE0\Te3As2_12.out")
 print("structure:\n", Na3PS4.structure)
 print("space group", Na3PS4.parsed_data["space_group"])
 print("atomic masses", Na3PS4.atomic_masses)
