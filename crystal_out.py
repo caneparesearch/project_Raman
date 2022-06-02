@@ -101,18 +101,22 @@ class crystalOut():
         }
 
         self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group()
-        cell, volume_density, energy, atom_lines = self.get_cell_params()
+        cell, volume_density, energy, atom_lines, asymm_atom_lines = self.get_cell_params()
         self.parsed_data["a"], self.parsed_data["b"], self.parsed_data["c"], self.parsed_data["alpha"], self.parsed_data["beta"], self.parsed_data["gamma"] = float(cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
         self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1]) 
         self.parsed_data["total_energy"] = float(energy)
         self.parsed_data["atom_lines"] = atom_lines
+        self.parsed_data["asymm_atom_lines"] = asymm_atom_lines
         self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_intensities()
         
-        self.atoms, self.coords = self.get_atoms_coords()
+        self.atoms, self.coords = self.get_atoms_coords(self.parsed_data["atom_lines"])
+        self.asymm_atoms, self.asymm_coords = self.get_atoms_coords(self.parsed_data["asymm_atom_lines"])
+
         self.lattice = Lattice.from_parameters(a=self.parsed_data['a'], b=self.parsed_data['b'], c=self.parsed_data['c'], 
                                         alpha =self.parsed_data['alpha'], 
                                         beta=self.parsed_data['beta'], 
                                         gamma=self.parsed_data['gamma'])
+
         self.structure = Structure(self.lattice, self.atoms, self.coords)
         self.atomic_masses = self.get_atomic_mass()
         self.intensities = self.parsed_data["intensities"]["polycrystalline_intensities"]
@@ -151,48 +155,63 @@ class crystalOut():
             crystCell = False
         self.file.seek(pos)
 
-        while True:
+        if len(readUntil(self.file, "FINAL OPTIMIZED GEOMETRY - DIMENSIONALITY OF THE SYSTEM      3")) > 0:
+            optimized = True
+        else:
+            optimized = False
+        self.file.seek(pos)
+
+        if optimized:
+            readUntil(self.file, "FINAL OPTIMIZED GEOMETRY - DIMENSIONALITY OF THE SYSTEM      3")
+            for i in range(3):
+                self.file.readline()
             if crystCell:
-                line = readUntil(self.file, "CRYSTALLOGRAPHIC CELL (VOLUME=")
                 volume_density = 0, 0 # placeholder (not dealt with this type of output yet)
             else:
-                line = readUntil(self.file, "PRIMITIVE CELL -")
-                volume_density = line.split()[7], line.split()[10]
+                volume_density_line = self.file.readline().split()
+                volume_density = volume_density_line[7], volume_density_line[10] 
+        else:
+            # read the first structure, if file does not contain optimization sequence
+            line = readUntil(self.file, "PRIMITIVE CELL -")
+            volume_density = line.split()[7], line.split()[10]
             if len(line) == 0:
-                break
-                
-            self.file.readline()
-            cell = self.file.readline().split()
-            if len(cell) != 6:
-                print("Weird number of cell parameters. Aborting.")
-                sys.exit()
-                
-            readUntil(self.file, "*************************************************")
-            if not crystCell:
-                readUntil(self.file, "*************************************************")
-            
-            n = 0
-            atom_lines = ""
-            while True:
-                line = self.file.readline().split()
-                if len(line) != 7:
-                    break
-                if line[1] != "T":
-                    continue
-                n = n + 1
-                atom = line[3][0] + line[3][1:].lower()
-                atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
-            
-            energy_line = readUntil(self.file, "TOTAL ENERGY(DFT)(AU)")
-            if len(energy_line) > 48:
-                energy = energy_line[26:48].strip()
-            return cell, volume_density, energy, atom_lines
+                print("NO VOLUME DENSITY DATA")
+                volume_density = 0, 0 
 
-    def get_atoms_coords(self):
-        atom_lines = self.parsed_data["atom_lines"].split("\n") 
+        self.file.readline()
+        cell = self.file.readline().split()
+        if len(cell) != 6:
+            print("Weird number of cell parameters. Aborting.")
+            sys.exit()
+        
+        readUntil(self.file, "*************************************************")
+        if not crystCell:
+            readUntil(self.file, "*************************************************")
+            
+        n = 0
+        all_atom_lines = ""
+        asymm_atom_lines = ""
+        while True:
+            line = self.file.readline().split()
+            if len(line) != 7:
+                break
+            n += 1
+            atom = line[3][0] + line[3][1:].lower()
+            all_atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
+            if line[1] == "T":
+                asymm_atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
+            
+        energy_line = readUntil(self.file, "TOTAL ENERGY(DFT)(AU)")
+        if len(energy_line) > 48:
+            energy = energy_line[26:48].strip()
+            
+        return cell, volume_density, energy, all_atom_lines, asymm_atom_lines
+
+    def get_atoms_coords(self, atom_lines):
+        atom_lines_ = atom_lines.split("\n") 
         all_atoms = []
         all_coords = []
-        for line in atom_lines:
+        for line in atom_lines_:
             if line:
                 s = line.split(" ")
                 atom = s[1]
