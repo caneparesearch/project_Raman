@@ -102,12 +102,13 @@ class crystalOut():
 
         self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group()
         cell, volume_density, energy, atom_lines, asymm_atom_lines = self.get_cell_params()
+        print(cell)
         self.parsed_data["a"], self.parsed_data["b"], self.parsed_data["c"], self.parsed_data["alpha"], self.parsed_data["beta"], self.parsed_data["gamma"] = float(cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
         self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1]) 
         self.parsed_data["total_energy"] = float(energy)
         self.parsed_data["atom_lines"] = atom_lines
         self.parsed_data["asymm_atom_lines"] = asymm_atom_lines
-        self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_intensities()
+        self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_raman_intensities()
         
         self.atoms, self.coords = self.get_atoms_coords(self.parsed_data["atom_lines"])
         self.asymm_atoms, self.asymm_coords = self.get_atoms_coords(self.parsed_data["asymm_atom_lines"])
@@ -118,13 +119,13 @@ class crystalOut():
                                         gamma=self.parsed_data['gamma'])
 
         self.structure = Structure(self.lattice, self.atoms, self.coords)
-        self.atomic_masses = self.get_atomic_mass()
-        self.intensities = self.parsed_data["intensities"]["polycrystalline_intensities"]
-        self.dielectric_tensor, self.vibrational_contributions = self.get_dielectric_tensor()
-        self.second_electric_susceptibility = self.get_second_electric_susceptibiliy()
-        self.third_electric_susceptibility = self.get_third_electric_susceptibiliy()
-        self.born_charge = self.get_born_charge()
-        self.thermodynamic_terms = self.get_thermodynamic_terms()
+        self.atomicMasses = self.get_atomic_mass()
+        self.intRaman = self.parsed_data["intensities"]["polycrystalline_intensities"]
+        self.dielectricTensor, self.vibContributionsDielectric = self.get_dielectric_tensor()
+        self.secondElectricSusceptibility = self.get_second_electric_susceptibiliy()
+        self.thirdElectricSusceptibility = self.get_third_electric_susceptibiliy()
+        self.bornCharge, self.bornChargeNormalModeBasis = self.get_born_charge()
+        self.thermodynamicTerms = self.get_thermodynamic_terms()
         self.file.close()
 
     def get_space_group(self):
@@ -222,9 +223,9 @@ class crystalOut():
                 all_coords.append(coords)
         return all_atoms, all_coords
 
-    def get_intensities(self):
+    def get_raman_intensities(self):
         """
-        returns the intensities as a numpy array with format [frequency intensity]
+        returns the intensities as a dict with format frequency: intensity
         only polycrystalline isotropic intensities (I_tot only), 
         TODO: add others and add single crystal 
         """
@@ -232,15 +233,15 @@ class crystalOut():
         for i in range(4):
             line = self.file.readline()
 
-        array = []
+        raman_dict = {}
         while not line.isspace():
             fields = line.split()
             frequency = float(fields[2])
             tot_intensity = float(fields[5])
-            array.append([frequency, tot_intensity])
+            raman_dict[frequency] = tot_intensity
             line = self.file.readline()
         self.file.seek(0)
-        return np.array(array)
+        return raman_dict
 
     def get_atomic_mass(self):
         readUntil(self.file, "ATOMS ISOTOPIC MASS (AMU) FOR FREQUENCY CALCULATION")
@@ -336,8 +337,17 @@ class crystalOut():
             born_charge[atom_no]["Born Charge"] = tensor
             line = self.file.readline()
             line = self.file.readline()
+        readUntil(self.file, "BORN CHARGE VECTOR IN THE BASIS OF NORMAL MODES")
+        normal_basis = []
+        for i in range(4):
+            line = self.file.readline()
+        while not line.isspace():
+            line = line.split()
+            normal_basis.append([float(i) for i in line[1:]])
+            line = self.file.readline()
+        normal_basis = np.array(normal_basis)
         self.file.seek(0)
-        return born_charge
+        return born_charge, normal_basis
     
     def get_thermodynamic_terms(self):
         thermo = {}
