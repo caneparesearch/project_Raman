@@ -102,7 +102,6 @@ class crystalOut():
 
         self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group()
         cell, volume_density, energy, atom_lines, asymm_atom_lines = self.get_cell_params()
-        print(cell)
         self.parsed_data["a"], self.parsed_data["b"], self.parsed_data["c"], self.parsed_data["alpha"], self.parsed_data["beta"], self.parsed_data["gamma"] = float(cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
         self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1]) 
         self.parsed_data["total_energy"] = float(energy)
@@ -168,6 +167,7 @@ class crystalOut():
                 self.file.readline()
             if crystCell:
                 volume_density = 0, 0 # placeholder (not dealt with this type of output yet)
+                self.file.readline()
             else:
                 volume_density_line = self.file.readline().split()
                 volume_density = volume_density_line[7], volume_density_line[10] 
