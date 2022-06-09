@@ -90,34 +90,40 @@ class crystalOut():
         self.file = open(filename, "r")
         self.parsed_data = {
             "space_group": "", "space_group_num" : 0,
-            "a": 0,"b": 0,"c": 0,
-            "alpha": 0,"beta" : 0,"gamma": 0,
-            "volume": 0,"density": 0,
+            "cell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0},
+            "crystCell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0},
+            "volume": 0, "cryst_volume": 0,"density": 0, 
             "total_energy" : 0,
-            "atom_lines": "",
-            "intensities": {
-            "polycrystalline_intensities": []
-            }
+            "atom_lines": {"all_atom_lines": [], "asymm_atom_lines":[], "cryst_all_atom_lines": [], "cryst_asymm_atom_lines": []},
+            "intensities": {"polycrystalline_intensities": []}
         }
 
         self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group()
-        cell, volume_density, energy, atom_lines, asymm_atom_lines = self.get_cell_params()
-        self.parsed_data["a"], self.parsed_data["b"], self.parsed_data["c"], self.parsed_data["alpha"], self.parsed_data["beta"], self.parsed_data["gamma"] = float(cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
+        cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines = self.get_cell_params()
+        
+        self.parsed_data["cell"]["a"], self.parsed_data["cell"]["b"], self.parsed_data["cell"]["c"], self.parsed_data["cell"]["alpha"], self.parsed_data["cell"]["beta"], self.parsed_data["cell"]["gamma"] = float(cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
         self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1]) 
         self.parsed_data["total_energy"] = float(energy)
-        self.parsed_data["atom_lines"] = atom_lines
-        self.parsed_data["asymm_atom_lines"] = asymm_atom_lines
+        self.parsed_data["atom_lines"]["all_atom_lines"] = all_atom_lines
+        self.parsed_data["atom_lines"]["asymm_atom_lines"] = asymm_atom_lines
+
         self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_raman_intensities()
-        
-        self.atoms, self.coords = self.get_atoms_coords(self.parsed_data["atom_lines"])
-        self.asymm_atoms, self.asymm_coords = self.get_atoms_coords(self.parsed_data["asymm_atom_lines"])
 
-        self.lattice = Lattice.from_parameters(a=self.parsed_data['a'], b=self.parsed_data['b'], c=self.parsed_data['c'], 
-                                        alpha =self.parsed_data['alpha'], 
-                                        beta=self.parsed_data['beta'], 
-                                        gamma=self.parsed_data['gamma'])
+        self.atoms, self.coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["all_atom_lines"])
+        self.asymm_atoms, self.asymm_coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["asymm_atom_lines"])
 
+        self.lattice = Lattice.from_parameters(a=self.parsed_data["cell"]['a'], b=self.parsed_data["cell"]['b'], c=self.parsed_data["cell"]['c'], 
+                                        alpha =self.parsed_data["cell"]['alpha'], beta=self.parsed_data["cell"]['beta'], gamma=self.parsed_data["cell"]['gamma'])
         self.structure = Structure(self.lattice, self.atoms, self.coords)
+
+        if crystCell:
+            self.parsed_data["crystCell"]["a"], self.parsed_data["crystCell"]["b"], self.parsed_data["crystCell"]["c"], self.parsed_data["crystCell"]["alpha"], self.parsed_data["crystCell"]["beta"], self.parsed_data["crystCell"]["gamma"] = float(crystCell[0]), float(crystCell[1]), float(crystCell[2]), float(crystCell[3]), float(crystCell[4]), float(crystCell[5])
+            self.parsed_data["cryst_volume"] = float(crystVolume)
+            self.parsed_data["atom_lines"]["cryst_all_atom_lines"] = cryst_all_atom_lines
+            self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"] = cryst_asymm_atom_lines
+            self.cryst_atoms, self.cryst_coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["cryst_all_atom_lines"])
+            self.cryst_asymm_atoms, self.cryst_asymm_coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"])
+
         self.atomicMasses = self.get_atomic_mass()
         self.intRaman = self.parsed_data["intensities"]["polycrystalline_intensities"]
         self.dielectricTensor, self.vibContributionsDielectric = self.get_dielectric_tensor()
@@ -149,35 +155,28 @@ class crystalOut():
 
     def get_cell_params(self):
         pos = self.file.tell()
-        if len(readUntil(self.file, "TRANSFORMATION MATRIX PRIMITIVE-CRYSTALLOGRAPHIC CELL")) > 0:
-            crystCell = True
-        else:
-            crystCell = False
-        self.file.seek(pos)
-
         if len(readUntil(self.file, "FINAL OPTIMIZED GEOMETRY - DIMENSIONALITY OF THE SYSTEM      3")) > 0:
             optimized = True
+            print(">>>>>>> Optimized structure found.")
         else:
             optimized = False
+        self.file.seek(pos)
+
+        if len(readUntil(self.file, "TRANSFORMATION MATRIX PRIMITIVE-CRYSTALLOGRAPHIC CELL")) > 0:
+            isCrystCell = True
+        else:
+            isCrystCell = False
         self.file.seek(pos)
 
         if optimized:
             readUntil(self.file, "FINAL OPTIMIZED GEOMETRY - DIMENSIONALITY OF THE SYSTEM      3")
             for i in range(3):
                 self.file.readline()
-            if crystCell:
-                volume_density = 0, 0 # placeholder (not dealt with this type of output yet)
-                self.file.readline()
-            else:
-                volume_density_line = self.file.readline().split()
-                volume_density = volume_density_line[7], volume_density_line[10] 
+            volume_density_line = self.file.readline().split()
         else:
             # read the first structure, if file does not contain optimization sequence
-            line = readUntil(self.file, "PRIMITIVE CELL -")
-            volume_density = line.split()[7], line.split()[10]
-            if len(line) == 0:
-                print("NO VOLUME DENSITY DATA")
-                volume_density = 0, 0 
+            volume_density_line = readUntil(self.file, "PRIMITIVE CELL -").split()
+        volume_density = volume_density_line[7], volume_density_line[10]
 
         self.file.readline()
         cell = self.file.readline().split()
@@ -186,9 +185,8 @@ class crystalOut():
             sys.exit()
         
         readUntil(self.file, "*************************************************")
-        if not crystCell:
-            readUntil(self.file, "*************************************************")
-            
+        readUntil(self.file, "*************************************************")
+
         n = 0
         all_atom_lines = ""
         asymm_atom_lines = ""
@@ -201,12 +199,38 @@ class crystalOut():
             all_atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
             if line[1] == "T":
                 asymm_atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
-            
+
+        if isCrystCell:
+            print(">>>>>>> CRYSTALLOGRAPHIC CELL found.")
+            readUntil(self.file, "*************************************************")
+            crystVolume = self.file.readline().split()[3].strip(")")
+            self.file.readline()
+            crystCell = self.file.readline().split()
+            if len(crystCell) != 6:
+                print("Weird number of cell parameters. Aborting.")
+                sys.exit()
+            readUntil(self.file, "*************************************************")
+
+            n = 0
+            cryst_all_atom_lines = ""
+            cryst_asymm_atom_lines = ""
+            while True:
+                line = self.file.readline().split()
+                if len(line) != 7:
+                    break
+                n += 1
+                atom = line[3][0] + line[3][1:].lower()
+                cryst_all_atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
+                if line[1] == "T":
+                    cryst_asymm_atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
+        else:
+            crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines = None, None, None, None
+
         energy_line = readUntil(self.file, "TOTAL ENERGY(DFT)(AU)")
         if len(energy_line) > 48:
             energy = energy_line[26:48].strip()
             
-        return cell, volume_density, energy, all_atom_lines, asymm_atom_lines
+        return cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines
 
     def get_atoms_coords(self, atom_lines):
         atom_lines_ = atom_lines.split("\n") 
