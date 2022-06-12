@@ -5,6 +5,7 @@ import sys
 import numpy as np
 from pymatgen.core import Lattice, Structure
 import itertools
+import os
 
 # future: atomic species oxidation states 
 
@@ -87,6 +88,7 @@ class crystalOut():
 
     def __init__(self, filename):
         self.filename = filename
+        self.filedir = os.path.dirname(filename)
         self.file = open(filename, "r")
         self.parsed_data = {
             "space_group": "", "space_group_num" : 0,
@@ -389,3 +391,41 @@ class crystalOut():
         line = readUntil(self.file, "HEAT CAPACITY").split()
         thermo["HEAT CAPACITY"] = float(line[4])
         return thermo
+
+    def get_IR_tensor(self):
+        """
+        returns the IR tensor of size 3n x 3 in a numpy array. The file TENS_IR.DAT must be in the same 
+        directory as the CRYSTAL .out file
+        """
+        IR_file = self.filedir + "\\TENS_IR.DAT"
+        if os.path.isfile(IR_file):
+            IR_tensor = np.loadtxt(IR_file)
+            return IR_tensor
+        else:
+            raise FileNotFoundError("Please place TENS_IR.DAT file in the same directory as the CRYSTAL .out file")
+
+    def get_raman_tensor(self):
+        """
+        returns the Raman tensor of size 3n x 6 in a numpy array. The file TENS_RAMAN.DAT must be in the same 
+        directory as the CRYSTAL .out file
+        """
+        Raman_file = self.filedir + "\\TENS_RAMAN.DAT"
+        if os.path.isfile(Raman_file):
+            Raman_tensor = np.loadtxt(Raman_file)
+            return Raman_tensor
+        else:
+            raise FileNotFoundError("Please place TENS_RAMAN.DAT file in the same directory as the CRYSTAL .out file")
+
+    def get_dynamical_matrix(self):
+        """
+        returns the dynamical matrix of size 3n x 3n in a numpy array. The file HESSFREQ.DAT must be in the same 
+        directory as the CRYSTAL .out file
+        """
+        hessfreq_file = self.filedir + "\\HESSFREQ.DAT"
+        no_atoms = len(self.atoms)
+        if os.path.isfile(hessfreq_file):
+            dyn_matrix = np.loadtxt(hessfreq_file)
+            dyn_matrix = np.reshape(dyn_matrix.T, (3*no_atoms, 3*no_atoms))
+            return dyn_matrix
+        else:
+            raise FileNotFoundError("Please place HESSFREQ.DAT file in the same directory as the CRYSTAL .out file")
