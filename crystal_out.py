@@ -331,6 +331,10 @@ class crystalOut():
             self.file.readline()
         for i in range(15):
             line = self.file.readline().split()
+            if len(line) < 6: # line has 6 fields
+                line.insert(0,line[0][0:4]) # splits the component and gamma fields
+                line[1] = line[1][5:]
+            print(line)
             perm = list(itertools.permutations(line[0]))
             for p in perm:
                 index1 = xyz_to_num[p[0]]
