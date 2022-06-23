@@ -6,6 +6,7 @@ import numpy as np
 from pymatgen.core import Lattice, Structure
 import itertools
 import os
+import warnings
 from ast import literal_eval
 
 # future: atomic species oxidation states 
@@ -332,10 +333,19 @@ class crystalOut():
             self.file.readline()
         for i in range(15):
             line = self.file.readline().split()
-            if len(line) < 6: # line has 6 fields
+            if len(line) == 4: # line has 6 fields
                 line.insert(0,line[0][0:4]) # splits the component and gamma fields
                 line[1] = line[1][5:]
-            print(line)
+            elif len(line) == 3:
+                line.insert(0,line[0][0:4]) # splits the component and gamma fields
+                line[1] = line[1][5:]
+                gamma_chi = line.pop(1).split(")")
+                for i in range(len(gamma_chi)):
+                    if "*" in gamma_chi[i]:
+                        warnings.warn("Warning! SECOND HYPERPOLARIZABILITY computations incomplete. Please check.")
+                        line.insert(i+1, 0)
+                    else:
+                        line.insert(i+1, gamma_chi[i])
             perm = list(itertools.permutations(line[0]))
             for p in perm:
                 index1 = xyz_to_num[p[0]]
