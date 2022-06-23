@@ -6,6 +6,7 @@ import numpy as np
 from pymatgen.core import Lattice, Structure
 import itertools
 import os
+from ast import literal_eval
 
 # future: atomic species oxidation states 
 
@@ -433,3 +434,44 @@ class crystalOut():
             return dyn_matrix
         else:
             raise FileNotFoundError("Please place HESSFREQ.DAT file in the same directory as the CRYSTAL .out file")
+
+
+def return_structure_data(df2, idx):
+    """
+    returns csv data generated from crystalOutCSV back to dict 
+    """
+    structure_db_dict = {"structure":[], "spaceGroup":[],"thermodynamicTerms":[],
+                         "dielectricTensor":[], "vibContributionsDielectric":[], 
+                       "secondElectricSusceptibility":[],"thirdElectricSusceptibility":[], 
+                       "bornChargeArray":[],"bornChargeNormalModeBasis":[], "intRaman":[]}
+
+    structure_db_dict["structure"] = Structure.from_dict(json.loads(df2["structure"][idx]))
+    structure_db_dict["spaceGroup"] = df2["spaceGroup"][idx]
+    structure_db_dict["thermodynamicTerms"] = json.loads(df2["thermodynamicTerms"][idx])
+    structure_db_dict["intRaman"] = json.loads(df2["intRaman"][idx])
+
+    dielectricTensor = np.frombuffer(df2["dielectricTensor_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    dielectricTensor = dielectricTensor.reshape(literal_eval(df2["dielectricTensor_shape"][idx]))
+    structure_db_dict["dielectricTensor"] = dielectricTensor
+
+    vibContributionsDielectric = np.frombuffer(df2["vibContributionsDielectric_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    vibContributionsDielectric = vibContributionsDielectric.reshape(literal_eval(df2["vibContributionsDielectric_shape"][idx]))
+    structure_db_dict["vibContributionsDielectric"] = vibContributionsDielectric
+
+    secondElectricSusceptibility = np.frombuffer(df2["secondElectricSusceptibility_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    secondElectricSusceptibility = secondElectricSusceptibility.reshape(literal_eval(df2["secondElectricSusceptibility_shape"][idx]))
+    structure_db_dict["secondElectricSusceptibility"] = secondElectricSusceptibility
+
+    thirdElectricSusceptibility = np.frombuffer(df2["thirdElectricSusceptibility_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    thirdElectricSusceptibility = thirdElectricSusceptibility.reshape(literal_eval(df2["thirdElectricSusceptibility_shape"][idx]))
+    structure_db_dict["thirdElectricSusceptibility"] = thirdElectricSusceptibility
+
+    bornChargeArray = np.frombuffer(df2["bornChargeArray_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    bornChargeArray = bornChargeArray.reshape(literal_eval(df2["bornChargeArray_shape"][idx]))
+    structure_db_dict["bornChargeArray"] = bornChargeArray
+
+    bornChargeNormalModeBasis = np.frombuffer(df2["bornChargeNormalModeBasis_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    bornChargeNormalModeBasis = bornChargeNormalModeBasis.reshape(literal_eval(df2["bornChargeNormalModeBasis_shape"][idx]))
+    structure_db_dict["bornChargeNormalModeBasis"] = bornChargeNormalModeBasis
+    
+    return structure_db_dict
