@@ -1,6 +1,8 @@
 # Crystal output file parser: Structure and Raman intensities 
 
+from ast import literal_eval
 import glob
+import json
 import sys
 import numpy as np
 from pymatgen.core import Lattice, Structure
