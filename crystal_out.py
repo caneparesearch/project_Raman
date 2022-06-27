@@ -7,7 +7,7 @@ from pymatgen.core import Lattice, Structure
 import itertools
 import os
 import warnings
-from ast import literal_eval
+from scipy.special import voigt_profile
 
 # future: atomic species oxidation states 
 
@@ -445,6 +445,31 @@ class crystalOut():
         else:
             raise FileNotFoundError("Please place HESSFREQ.DAT file in the same directory as the CRYSTAL .out file")
 
+    def get_convoluted_spectra(self, sigma, gamma, padding=30, resolution=1000):
+        """
+        Returns: 
+            Frequencies (np.array), Intensities (np.array) of convolution of Raman spectra intensities calculated.
+            Convolution is based on Voigt profile.
+
+        Parameters:
+            sigma (float): standard deviation of Gaussian distribution. If sigma = 0, a Cauchy distribution is used.
+            gamma (float): half-width at half-maximum of Cauchy distribution. If gamma = 0, a Gaussian distribution is used.
+            padding (int): Frequency range added to the max and min of the frequencies to display the full spectra. Default=30.
+            resolution (int): Number of points to compute between the max and min. Default=1000.
+        """
+        data = np.array(list(self.intRaman.items()))
+        frequencies = np.linspace(min(data[:,0])-padding, max(data[:,0])+padding, resolution)
+        convoluted_intensities = np.zeros((resolution))
+        for i in range(data.shape[0]):
+            freq = data[i,0]
+            intensity = data[i,1]
+            convolution_single_peak = []
+            for x in frequencies:
+                convoluted_amplitude = voigt_profile(x-freq, sigma, gamma)*intensity
+                convolution_single_peak.append(convoluted_amplitude)
+            convoluted_intensities += np.array(convolution_single_peak)
+
+        return frequencies, convoluted_intensities
 
 def return_structure_data(df2, idx):
     """

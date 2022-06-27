@@ -1,5 +1,6 @@
 from crystal_out import crystalOut
 import numpy as np
+import matplotlib.pyplot as plt
 
 Na3PS4 = crystalOut("crystal17_output_files\\calc-Sb2Te_164_icsd69557_tzvp_PBE0\\Sb2Te_164.out")
 print("structure:\n", Na3PS4.structure)
@@ -16,3 +17,6 @@ print("thermodynamic terms:\n", Na3PS4.thermodynamicTerms)
 #print("IR tensor:\n", Na3PS4.get_IR_tensor().shape)
 #print("Raman tensor:\n", Na3PS4.get_raman_tensor().shape)
 #print("dynamical matrix:\n", Na3PS4.get_dynamical_matrix())
+f, i = Na3PS4.get_convoluted_spectra(5, 5)
+plt.plot(f, i)
+plt.show()
