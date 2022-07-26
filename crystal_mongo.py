@@ -12,6 +12,7 @@ from pymatgen.core import Lattice, Structure
 from crystal_out import crystalOut
 
 def crystal_mongo_drone():
+    password = input("Enter mongodb password for username raman_ml:")
     all_crystal_outputs = glob.glob("../project_Raman/crystal17_output_files/*/*.out")
     print("Found", len(all_crystal_outputs), "structures to be loaded into mongodb...")
 
@@ -19,7 +20,8 @@ def crystal_mongo_drone():
     print("popped:", all_crystal_outputs.pop(52))
     print("popped:", all_crystal_outputs.pop(52))
 
-    mc = MongoClient("orion.nus.edu.sg", 27017)
+    # rWAhoVdf25suZeqh
+    mc = MongoClient(host="orion.nus.edu.sg",username="raman_ml", password=password)
     db = mc["raman_ml"]
     structures = db.structures
 
@@ -47,9 +49,9 @@ def crystal_mongo_drone():
         structure_id = structures.insert_one(structure).inserted_id
         print("Done", structure_id)
 
-def load_structure_from_mongo(structure_name):
-    client = MongoClient("mongodb+srv://pengfei:rWAhoVdf25suZeqh@cluster0.1wcvyoq.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=certifi.where())
-    db = client['test']
+def load_structure_from_mongo(structure_name, password):
+    mc = MongoClient(host="orion.nus.edu.sg",username="raman_ml", password=password)
+    db = mc["raman_ml"]
     structures = db.structures
     structure_name_out = structure_name + ".out"
     query = structures.find_one({"structure_name":structure_name_out})
@@ -68,6 +70,9 @@ def load_structure_from_mongo(structure_name):
 
     return structure, spaceGroup, thermodynamicTerms, intRaman, dielectricTensor, vibContributionsDielectric, secondElectricSusceptibility, thirdElectricSusceptibility, bornChargeArray, bornChargeNormalModeBasis
 
+# example usage 
+# selected_name = "As2Se3_12"
+# structure, spaceGroup, thermodynamicTerms, intRaman, dielectricTensor, vibContributionsDielectric, secondElectricSusceptibility, thirdElectricSusceptibility, bornChargeArray, bornChargeNormalModeBasis = load_structure_from_mongo(selected_name)
 
 if __name__ == '__main__':
     crystal_mongo_drone()
