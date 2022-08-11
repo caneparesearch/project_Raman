@@ -70,9 +70,7 @@ def load_structure_from_mongo(structure_name, password):
 
     return structure, spaceGroup, thermodynamicTerms, intRaman, dielectricTensor, vibContributionsDielectric, secondElectricSusceptibility, thirdElectricSusceptibility, bornChargeArray, bornChargeNormalModeBasis
 
-# example usage 
-# selected_name = "As2Se3_12"
-# structure, spaceGroup, thermodynamicTerms, intRaman, dielectricTensor, vibContributionsDielectric, secondElectricSusceptibility, thirdElectricSusceptibility, bornChargeArray, bornChargeNormalModeBasis = load_structure_from_mongo(selected_name)
+
 
 if __name__ == '__main__':
     crystal_mongo_drone()
