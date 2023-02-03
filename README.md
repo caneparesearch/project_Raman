@@ -1,6 +1,6 @@
 # project_Raman
 Workflow code and output for computing Raman spectroscopy and properties related to lattice vibration using CRYSTAL.
-## cif2py
+## cif2cry
 Contains the code that converts CIF files to CRYSTAL input.
 ## cryoutput_parsing
 The code to parse CRYSTAL output.
