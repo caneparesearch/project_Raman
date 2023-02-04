@@ -1,5 +1,5 @@
 # required in working directory: this script, icsd_cif.txt, basis_sets/, icsd_cif/
-# Usage example: python cif2cry-v20230202.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
+# Usage example: python cif2cry-v20230204.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
 # fixed for rhombohedral; (in last version) added MAXCYCLE 150 for SCF, no need to add the NODIIS option
 import yaml
 import argparse
@@ -38,6 +38,7 @@ def minimal_set_latt(struc):
     latt_type = obj_sga.get_lattice_type() # tells hex/rhom from trigonal, so better than get_crystal_system()
     dict_out = {}                          # alternatively, use the latter and treat all trigonal using hexagonal cell
     rhom = False        # the only difference: rhombohedral will then use larger hex conventional cell, more expensive
+    rhom_prim = None
     if latt_type == "cubic":
         dict_out['latt'] = (struc.lattice.abc[0],)    # to define a tuple of one element
     elif latt_type == "hexagonal" or latt_type == "tetragonal":
@@ -46,6 +47,7 @@ def minimal_set_latt(struc):
         struc_stprim = obj_sga.get_primitive_standard_structure() # standard primitive cell (rhombohedral representation)
         dict_out['latt'] = struc_stprim.lattice.abc[0], struc_stprim.lattice.angles[0]
         rhom = True    # v2023
+        rhom_prim = struc_stprim    # v2023
     elif latt_type == "orthorhombic":
         dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2]
     elif latt_type == 'monoclinic':
@@ -60,11 +62,14 @@ def minimal_set_latt(struc):
         dict_out['latt'] = (struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2],
                             struc.lattice.angles[0], struc.lattice.angles[1], struc.lattice.angles[2])
     dict_out['set_num'] = len(dict_out['latt'])
-    return dict_out, rhom
+    return dict_out, rhom, rhom_prim
 
 
 def cif_to_crystal(cif_file, dict_bs, basis_type, functional_type):
     s = Structure.from_file("./icsd_cif/" + cif_file)    # added directory for the cif_file
+    dict_latt, rhom, rhom_prim = minimal_set_latt(s)
+    if rhom:    # v2023 if s is rhombohedral, change it to primitive from beginning
+        s = rhom_prim
     sga = SpacegroupAnalyzer(s)
     sgn = sga.get_space_group_number()
     s_symm = sga.get_symmetrized_structure()    # object of SymmetrizedStructure (can extract unique coords) (v1216)
@@ -74,7 +79,6 @@ def cif_to_crystal(cif_file, dict_bs, basis_type, functional_type):
     cry = ""
     cry += cif_file + "\n"
     cry += "CRYSTAL\n"
-    dict_latt, rhom = minimal_set_latt(s)
     if rhom:    # v2023 (all rhom converted to standard primitive, so all rhom should use IFHR=1, a and alpha)
         cry += "0 1 0\n"
     else:
