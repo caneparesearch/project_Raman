@@ -1,6 +1,6 @@
 # required in working directory: this script, icsd_cif.txt, basis_sets/, icsd_cif/
 # Usage example: python cif2cry-v20230204.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
-# fixed for rhombohedral; (in last version) added MAXCYCLE 150 for SCF, no need to add the NODIIS option
+# fixed for rhombohedral; (in last version) added MAXCYCLE 150 for SCF, no need to add the NODIIS option upfront
 import yaml
 import argparse
 import os
