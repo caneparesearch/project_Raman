@@ -4,7 +4,7 @@ import numpy as np
 import json
 from crystal_out import crystalOut
 
-all_crystal_outputs = glob.glob("../project_Raman/crystal17_output_files/*/*.out")
+all_crystal_outputs = glob.glob("crystal17_output_files/*/*.out")
 print(len(all_crystal_outputs), "structures in total")
 
 print("Structures that failed to run:")
