@@ -11,7 +11,8 @@ import os
 import warnings
 from scipy.special import voigt_profile
 
-# future: atomic species oxidation states 
+
+# future: atomic species oxidation states
 
 def readUntil(f, s):
     """
@@ -25,7 +26,8 @@ def readUntil(f, s):
         if s in line:
             return line.strip()
 
-xyz_to_num ={"X":0, "Y": 1, "Z": 2}
+
+xyz_to_num = {"X": 0, "Y": 1, "Z": 2}
 
 spacegroups = {
     "P 1": 1, "P -1": 2, "P 2": 3, "P 21": 4, "C 2": 5, "P M": 6, "P C": 7,
@@ -85,6 +87,7 @@ spacegroups = {
     "F D 3 C": 228, "I M 3 M": 229, "I A 3 D": 230,
 }
 
+
 class crystalOut():
     """
     Crystal output file parser v0.1
@@ -94,21 +97,20 @@ class crystalOut():
         self.filename = filename
         self.filedir = os.path.dirname(filename)
         self.file = open(filename, "r")
-        self.parsed_data = {
-            "space_group": "", "space_group_num" : 0,
-            "cell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0},
-            "crystCell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0},
-            "volume": 0, "cryst_volume": 0,"density": 0, 
-            "total_energy" : 0,
-            "atom_lines": {"all_atom_lines": [], "asymm_atom_lines":[], "cryst_all_atom_lines": [], "cryst_asymm_atom_lines": []},
-            "intensities": {"polycrystalline_intensities": []}
-        }
+        self.parsed_data = {"space_group": (self.get_space_group())[0], "space_group_num": (self.get_space_group())[1],
+                            "cell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0},
+                            "crystCell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0}, "volume": 0,
+                            "cryst_volume": 0, "density": 0, "total_energy": 0,
+                            "atom_lines": {"all_atom_lines": [], "asymm_atom_lines": [], "cryst_all_atom_lines": [],
+                                           "cryst_asymm_atom_lines": []},
+                            "intensities": {"polycrystalline_intensities": []}}
 
-        self.parsed_data["space_group"], self.parsed_data["space_group_num"]  = self.get_space_group()
         cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines = self.get_cell_params()
-        
-        self.parsed_data["cell"]["a"], self.parsed_data["cell"]["b"], self.parsed_data["cell"]["c"], self.parsed_data["cell"]["alpha"], self.parsed_data["cell"]["beta"], self.parsed_data["cell"]["gamma"] = float(cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
-        self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1]) 
+
+        self.parsed_data["cell"]["a"], self.parsed_data["cell"]["b"], self.parsed_data["cell"]["c"], \
+        self.parsed_data["cell"]["alpha"], self.parsed_data["cell"]["beta"], self.parsed_data["cell"]["gamma"] = float(
+            cell[0]), float(cell[1]), float(cell[2]), float(cell[3]), float(cell[4]), float(cell[5])
+        self.parsed_data["volume"], self.parsed_data["density"] = float(volume_density[0]), float(volume_density[1])
         self.parsed_data["total_energy"] = float(energy)
         self.parsed_data["atom_lines"]["all_atom_lines"] = all_atom_lines
         self.parsed_data["atom_lines"]["asymm_atom_lines"] = asymm_atom_lines
@@ -118,17 +120,25 @@ class crystalOut():
         self.atoms, self.coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["all_atom_lines"])
         self.asymm_atoms, self.asymm_coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["asymm_atom_lines"])
 
-        self.lattice = Lattice.from_parameters(a=self.parsed_data["cell"]['a'], b=self.parsed_data["cell"]['b'], c=self.parsed_data["cell"]['c'], 
-                                        alpha =self.parsed_data["cell"]['alpha'], beta=self.parsed_data["cell"]['beta'], gamma=self.parsed_data["cell"]['gamma'])
+        self.lattice = Lattice.from_parameters(a=self.parsed_data["cell"]['a'], b=self.parsed_data["cell"]['b'],
+                                               c=self.parsed_data["cell"]['c'],
+                                               alpha=self.parsed_data["cell"]['alpha'],
+                                               beta=self.parsed_data["cell"]['beta'],
+                                               gamma=self.parsed_data["cell"]['gamma'])
         self.structure = Structure(self.lattice, self.atoms, self.coords)
 
         if crystCell:
-            self.parsed_data["crystCell"]["a"], self.parsed_data["crystCell"]["b"], self.parsed_data["crystCell"]["c"], self.parsed_data["crystCell"]["alpha"], self.parsed_data["crystCell"]["beta"], self.parsed_data["crystCell"]["gamma"] = float(crystCell[0]), float(crystCell[1]), float(crystCell[2]), float(crystCell[3]), float(crystCell[4]), float(crystCell[5])
+            self.parsed_data["crystCell"]["a"], self.parsed_data["crystCell"]["b"], self.parsed_data["crystCell"]["c"], \
+            self.parsed_data["crystCell"]["alpha"], self.parsed_data["crystCell"]["beta"], \
+            self.parsed_data["crystCell"]["gamma"] = float(crystCell[0]), float(crystCell[1]), float(
+                crystCell[2]), float(crystCell[3]), float(crystCell[4]), float(crystCell[5])
             self.parsed_data["cryst_volume"] = float(crystVolume)
             self.parsed_data["atom_lines"]["cryst_all_atom_lines"] = cryst_all_atom_lines
             self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"] = cryst_asymm_atom_lines
-            self.cryst_atoms, self.cryst_coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["cryst_all_atom_lines"])
-            self.cryst_asymm_atoms, self.cryst_asymm_coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"])
+            self.cryst_atoms, self.cryst_coords = self.get_atoms_coords(
+                self.parsed_data["atom_lines"]["cryst_all_atom_lines"])
+            self.cryst_asymm_atoms, self.cryst_asymm_coords = self.get_atoms_coords(
+                self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"])
 
         self.atomicMasses = self.get_atomic_mass()
         self.intRaman = self.parsed_data["intensities"]["polycrystalline_intensities"]
@@ -189,7 +199,7 @@ class crystalOut():
         if len(cell) != 6:
             print("Weird number of cell parameters. Aborting.")
             sys.exit()
-        
+
         readUntil(self.file, "*************************************************")
         readUntil(self.file, "*************************************************")
 
@@ -235,11 +245,11 @@ class crystalOut():
         energy_line = readUntil(self.file, "TOTAL ENERGY(DFT)(AU)")
         if len(energy_line) > 48:
             energy = energy_line[26:48].strip()
-            
+
         return cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines
 
     def get_atoms_coords(self, atom_lines):
-        atom_lines_ = atom_lines.split("\n") 
+        atom_lines_ = atom_lines.split("\n")
         all_atoms = []
         all_coords = []
         for line in atom_lines_:
@@ -282,38 +292,38 @@ class crystalOut():
             fields = line.split()
             i = 0
             while i < len(fields):
-                atomic_masses[int(fields[i])] = (fields[i+1], float(fields[i+2]))
+                atomic_masses[int(fields[i])] = (fields[i + 1], float(fields[i + 2]))
                 i += 3
             line = self.file.readline()
         self.file.seek(0)
         return atomic_masses
-    
+
     def get_dielectric_tensor(self):
-        dielectric_tensor = np.zeros([3,3])
+        dielectric_tensor = np.zeros([3, 3])
         vibrational_contributions = {}
         readUntil(self.file, "VIBRATIONAL CONTRIBUTIONS TO THE STATIC DIELECTRIC TENSOR (OSCILLATOR")
         for i in range(18):
             line = self.file.readline()
         while "SUM TENSOR OF THE VIBRATIONAL CONTRIBUTIONS TO THE' STATIC DIELECTRIC     TENSOR" not in line:
-            tensor = np.zeros([3,3])
+            tensor = np.zeros([3, 3])
             line = line.split()
             mode = int(line[0])
-            tensor[0,:] = [float(i) for i in line[1:]]
-            for i in range(1,3):
+            tensor[0, :] = [float(i) for i in line[1:]]
+            for i in range(1, 3):
                 line = self.file.readline().split()
-                tensor[i,:] = [float(i) for i in line]
+                tensor[i, :] = [float(i) for i in line]
             vibrational_contributions[mode] = tensor
             line = self.file.readline()
             line = self.file.readline()
         line = self.file.readline()
         for i in range(3):
             line = self.file.readline().split()
-            dielectric_tensor[i,:] = [float(i) for i in line]
+            dielectric_tensor[i, :] = [float(i) for i in line]
         self.file.seek(0)
         return dielectric_tensor, vibrational_contributions
 
     def get_second_electric_susceptibiliy(self):
-        tensor = np.zeros([3,3,3])
+        tensor = np.zeros([3, 3, 3])
         readUntil(self.file, "FIRST HYPERPOLARIZABILITY (BETA) AND SECOND ELECTRIC SUSCEPTIBILITY (CHI(2))")
         for i in range(5):
             self.file.readline()
@@ -324,37 +334,37 @@ class crystalOut():
                 index1 = xyz_to_num[p[0]]
                 index2 = xyz_to_num[p[1]]
                 index3 = xyz_to_num[p[2]]
-                tensor[index1,index2,index3] = float(line[4])
+                tensor[index1, index2, index3] = float(line[4])
         self.file.seek(0)
         return tensor
-    
+
     def get_third_electric_susceptibiliy(self):
-        tensor = np.zeros([3,3,3,3])
+        tensor = np.zeros([3, 3, 3, 3])
         readUntil(self.file, "SECOND HYPERPOLARIZABILITY (GAMMA) AND THIRD ELECTRIC SUSCEPTIBILITY (CHI(3))")
         for i in range(5):
             self.file.readline()
         for i in range(15):
             line = self.file.readline().split()
-            if len(line) == 4: # line has 6 fields
-                line.insert(0,line[0][0:4]) # splits the component and gamma fields
+            if len(line) == 4:  # line has 6 fields
+                line.insert(0, line[0][0:4])  # splits the component and gamma fields
                 line[1] = line[1][5:]
             elif len(line) == 3:
-                line.insert(0,line[0][0:4]) # splits the component and gamma fields
+                line.insert(0, line[0][0:4])  # splits the component and gamma fields
                 line[1] = line[1][5:]
                 gamma_chi = line.pop(1).split(")")
                 for i in range(len(gamma_chi)):
                     if "*" in gamma_chi[i]:
                         warnings.warn("Warning! SECOND HYPERPOLARIZABILITY computations incomplete. Please check.")
-                        line.insert(i+1, 0)
+                        line.insert(i + 1, 0)
                     else:
-                        line.insert(i+1, gamma_chi[i])
+                        line.insert(i + 1, gamma_chi[i])
             perm = list(itertools.permutations(line[0]))
             for p in perm:
                 index1 = xyz_to_num[p[0]]
                 index2 = xyz_to_num[p[1]]
                 index3 = xyz_to_num[p[2]]
                 index4 = xyz_to_num[p[3]]
-                tensor[index1,index2,index3,index4] = float(line[4])
+                tensor[index1, index2, index3, index4] = float(line[4])
         self.file.seek(0)
         return tensor
 
@@ -368,12 +378,12 @@ class crystalOut():
             atom_no = int(line[1])
             atom_sym = line[2]
             dynamic_charge = float(line[5])
-            tensor = np.zeros([3,3])
+            tensor = np.zeros([3, 3])
             self.file.readline()
             self.file.readline()
             for i in range(3):
                 line = self.file.readline().split()
-                tensor[i,:] = [float(i) for i in line[1:]]
+                tensor[i, :] = [float(i) for i in line[1:]]
             born_charge[atom_no] = {}
             born_charge[atom_no]["Atomic symbol"] = atom_sym
             born_charge[atom_no]["Dynamic Charge"] = dynamic_charge
@@ -391,7 +401,7 @@ class crystalOut():
         normal_basis = np.array(normal_basis)
         self.file.seek(0)
         return born_charge, normal_basis
-    
+
     def get_thermodynamic_terms(self):
         thermo = {}
         readUntil(self.file, "HARMONIC VIBRATIONAL CONTRIBUTIONS TO THERMODYNAMIC FUNCTIONS AT GIVEN")
@@ -442,7 +452,7 @@ class crystalOut():
         no_atoms = len(self.atoms)
         if os.path.isfile(hessfreq_file):
             dyn_matrix = np.loadtxt(hessfreq_file)
-            dyn_matrix = np.reshape(dyn_matrix.T, (3*no_atoms, 3*no_atoms))
+            dyn_matrix = np.reshape(dyn_matrix.T, (3 * no_atoms, 3 * no_atoms))
             return dyn_matrix
         else:
             raise FileNotFoundError("Please place HESSFREQ.DAT file in the same directory as the CRYSTAL .out file")
@@ -460,55 +470,69 @@ class crystalOut():
             resolution (int): Number of points to compute between the max and min. Default=1000.
         """
         data = np.array(list(self.intRaman.items()))
-        frequencies = np.linspace(min(data[:,0])-padding, max(data[:,0])+padding, resolution)
+        frequencies = np.linspace(min(data[:, 0]) - padding, max(data[:, 0]) + padding, resolution)
         convoluted_intensities = np.zeros((resolution))
         for i in range(data.shape[0]):
-            freq = data[i,0]
-            intensity = data[i,1]
+            freq = data[i, 0]
+            intensity = data[i, 1]
             convolution_single_peak = []
             for x in frequencies:
-                convoluted_amplitude = voigt_profile(x-freq, sigma, gamma)*intensity
+                convoluted_amplitude = voigt_profile(x - freq, sigma, gamma) * intensity
                 convolution_single_peak.append(convoluted_amplitude)
             convoluted_intensities += np.array(convolution_single_peak)
 
         return frequencies, convoluted_intensities
 
+
 def return_structure_data(df2, idx):
     """
     returns csv data generated from crystalOutCSV back to dict 
     """
-    structure_db_dict = {"structure":[], "spaceGroup":[],"thermodynamicTerms":[],
-                         "dielectricTensor":[], "vibContributionsDielectric":[], 
-                       "secondElectricSusceptibility":[],"thirdElectricSusceptibility":[], 
-                       "bornChargeArray":[],"bornChargeNormalModeBasis":[], "intRaman":[]}
+    structure_db_dict = {"structure": Structure.from_dict(json.loads(df2["structure"][idx])),
+                         "spaceGroup": df2["spaceGroup"][idx],
+                         "thermodynamicTerms": json.loads(df2["thermodynamicTerms"][idx]), "dielectricTensor": [],
+                         "vibContributionsDielectric": [], "secondElectricSusceptibility": [],
+                         "thirdElectricSusceptibility": [], "bornChargeArray": [], "bornChargeNormalModeBasis": [],
+                         "intRaman": json.loads(df2["intRaman"][idx])}
 
-    structure_db_dict["structure"] = Structure.from_dict(json.loads(df2["structure"][idx]))
-    structure_db_dict["spaceGroup"] = df2["spaceGroup"][idx]
-    structure_db_dict["thermodynamicTerms"] = json.loads(df2["thermodynamicTerms"][idx])
-    structure_db_dict["intRaman"] = json.loads(df2["intRaman"][idx])
-
-    dielectricTensor = np.frombuffer(df2["dielectricTensor_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    dielectricTensor = np.frombuffer(
+        df2["dielectricTensor_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1],
+        dtype=np.float64)
     dielectricTensor = dielectricTensor.reshape(literal_eval(df2["dielectricTensor_shape"][idx]))
     structure_db_dict["dielectricTensor"] = dielectricTensor
 
-    vibContributionsDielectric = np.frombuffer(df2["vibContributionsDielectric_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
-    vibContributionsDielectric = vibContributionsDielectric.reshape(literal_eval(df2["vibContributionsDielectric_shape"][idx]))
+    vibContributionsDielectric = np.frombuffer(
+        df2["vibContributionsDielectric_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1],
+        dtype=np.float64)
+    vibContributionsDielectric = vibContributionsDielectric.reshape(
+        literal_eval(df2["vibContributionsDielectric_shape"][idx]))
     structure_db_dict["vibContributionsDielectric"] = vibContributionsDielectric
 
-    secondElectricSusceptibility = np.frombuffer(df2["secondElectricSusceptibility_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
-    secondElectricSusceptibility = secondElectricSusceptibility.reshape(literal_eval(df2["secondElectricSusceptibility_shape"][idx]))
+    secondElectricSusceptibility = np.frombuffer(
+        df2["secondElectricSusceptibility_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1],
+        dtype=np.float64)
+    secondElectricSusceptibility = secondElectricSusceptibility.reshape(
+        literal_eval(df2["secondElectricSusceptibility_shape"][idx]))
     structure_db_dict["secondElectricSusceptibility"] = secondElectricSusceptibility
 
-    thirdElectricSusceptibility = np.frombuffer(df2["thirdElectricSusceptibility_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
-    thirdElectricSusceptibility = thirdElectricSusceptibility.reshape(literal_eval(df2["thirdElectricSusceptibility_shape"][idx]))
+    thirdElectricSusceptibility = np.frombuffer(
+        df2["thirdElectricSusceptibility_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1],
+        dtype=np.float64)
+    thirdElectricSusceptibility = thirdElectricSusceptibility.reshape(
+        literal_eval(df2["thirdElectricSusceptibility_shape"][idx]))
     structure_db_dict["thirdElectricSusceptibility"] = thirdElectricSusceptibility
 
-    bornChargeArray = np.frombuffer(df2["bornChargeArray_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
+    bornChargeArray = np.frombuffer(
+        df2["bornChargeArray_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1],
+        dtype=np.float64)
     bornChargeArray = bornChargeArray.reshape(literal_eval(df2["bornChargeArray_shape"][idx]))
     structure_db_dict["bornChargeArray"] = bornChargeArray
 
-    bornChargeNormalModeBasis = np.frombuffer(df2["bornChargeNormalModeBasis_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1], dtype=np.float64)
-    bornChargeNormalModeBasis = bornChargeNormalModeBasis.reshape(literal_eval(df2["bornChargeNormalModeBasis_shape"][idx]))
+    bornChargeNormalModeBasis = np.frombuffer(
+        df2["bornChargeNormalModeBasis_flattened"][idx].encode().decode('unicode-escape').encode('ISO-8859-1')[2:-1],
+        dtype=np.float64)
+    bornChargeNormalModeBasis = bornChargeNormalModeBasis.reshape(
+        literal_eval(df2["bornChargeNormalModeBasis_shape"][idx]))
     structure_db_dict["bornChargeNormalModeBasis"] = bornChargeNormalModeBasis
-    
+
     return structure_db_dict
