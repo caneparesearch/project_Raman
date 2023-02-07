@@ -1,6 +1,6 @@
 # required in working directory: this script, icsd_cif.txt, basis_sets/, icsd_cif/
-# Usage example: python cif2cry-v20230204.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
-# fixed for rhombohedral; (in last version) added MAXCYCLE 150 for SCF, no need to add the NODIIS option upfront
+# Usage example: python cif2cry-v20230206.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
+# mono; (in last version) fixed for rhombohedral
 import yaml
 import argparse
 import os
@@ -51,13 +51,21 @@ def minimal_set_latt(struc):
     elif latt_type == "orthorhombic":
         dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2]
     elif latt_type == 'monoclinic':
-        # Can also use: unique_index = [n for n in range(0, 3) if struc.lattice.abc.count(struc.lattice.abc[n]) == 1]
-        if struc.lattice.abc.count(struc.lattice.abc[1]) == 1: # if b unique, put a, b, c, beta
+        other_angle1 = 0.0; other_angle2 = 0.0
+        # Can also use: unique_index = [n for n in range(0, 3) if struc.lattice.angles.count(struc.lattice.angles[n]) == 1]
+        if struc.lattice.angles.count(struc.lattice.angles[1]) == 1: # if beta unique (b uniquely perp), put a, b, c, beta
             dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2], struc.lattice.angles[1]
-        elif struc.lattice.abc.count(struc.lattice.abc[2]) == 1: # if c unique, put a, b, c, gamma
+            other_angle1 = struc.lattice.angles[0]; other_angle2 = struc.lattice.angles[2]
+        elif struc.lattice.angles.count(struc.lattice.angles[2]) == 1: # if gamma unique (c uniquely perp), put a, b, c, gamma
             dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2], struc.lattice.angles[2]
-        elif struc.lattice.abc.count(struc.lattice.abc[0]) == 1: # if a unique (not standard), put a, b, c, alpha
+            other_angle1 = struc.lattice.angles[0]; other_angle2 = struc.lattice.angles[1]
+        elif struc.lattice.angles.count(struc.lattice.angles[0]) == 1: # if alpha unique (not standard), put a, b, c, alpha
             dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2], struc.lattice.angles[0]
+            other_angle1 = struc.lattice.angles[1]; other_angle2 = struc.lattice.angles[2]
+        if other_angle1 != other_angle2:    # to make sure the ICSD CIF is in standard monoclinic cell (not primitive cell for base-centered monoclinic)
+            print("problem with monoclinic: the other two angles are not equal")
+        if other_angle1 != 90.0:
+            print("problem with monoclinic: the other two angles are not 90 degree")
     elif latt_type == "triclinic":
         dict_out['latt'] = (struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2],
                             struc.lattice.angles[0], struc.lattice.angles[1], struc.lattice.angles[2])

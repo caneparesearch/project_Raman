@@ -13,7 +13,7 @@ from crystal_out import crystalOut
 
 def crystal_mongo_drone():
     password = input("Enter mongodb password for username raman_ml:")
-    all_crystal_outputs = glob.glob("../project_Raman/crystal17_output_files/*/*.out")
+    all_crystal_outputs = glob.glob("crystal17_output_files/*/*.out")
     print("Found", len(all_crystal_outputs), "structures to be loaded into mongodb...")
 
     print("Structures identified to have errors:")
@@ -28,23 +28,23 @@ def crystal_mongo_drone():
     for s in all_crystal_outputs:
         selected_structure = crystalOut(s)
         name = s.split("\\")[-1]
-        print("Doing", name)
+        print("Working on", name)
         bornChargeArrayList = []
         for val in selected_structure.bornCharge.values():
             bornChargeArrayList.append(val["Born Charge"])
         bornChargeArray = np.concatenate(bornChargeArrayList, dtype = "float64")
 
         structure = {"structure_name": name,
-                    "structure":json.dumps(selected_structure.structure.as_dict()), 
-                    "spaceGroup":selected_structure.parsed_data["space_group"],
-                    "thermodynamicTerms":json.dumps(selected_structure.thermodynamicTerms),
-                    "dielectricTensor":Binary(pickle.dumps(selected_structure.dielectricTensor, protocol=2), subtype=128),
-                    "vibContributionsDielectric":Binary(pickle.dumps(selected_structure.vibContributionsDielectric, protocol=2), subtype=128),
-                    "secondElectricSusceptibility":Binary(pickle.dumps(selected_structure.secondElectricSusceptibility, protocol=2), subtype=128),
-                    "thirdElectricSusceptibility":Binary(pickle.dumps(selected_structure.thirdElectricSusceptibility, protocol=2), subtype=128),
-                    "bornChargeArray":Binary(pickle.dumps(bornChargeArray, protocol=2), subtype=128),
-                    "bornChargeNormalModeBasis":Binary(pickle.dumps(selected_structure.bornChargeNormalModeBasis, protocol=2), subtype=128),
-                    "intRaman":json.dumps(selected_structure.intRaman)}
+                    "structure": json.dumps(selected_structure.structure.as_dict()),
+                    "spaceGroup": selected_structure.parsed_data["space_group"],
+                    "thermodynamicTerms": json.dumps(selected_structure.thermodynamicTerms),
+                    "dielectricTensor": Binary(pickle.dumps(selected_structure.dielectricTensor, protocol=2), subtype=128),
+                    "vibContributionsDielectric": Binary(pickle.dumps(selected_structure.vibContributionsDielectric, protocol=2), subtype=128),
+                    "secondElectricSusceptibility": Binary(pickle.dumps(selected_structure.secondElectricSusceptibility, protocol=2), subtype=128),
+                    "thirdElectricSusceptibility": Binary(pickle.dumps(selected_structure.thirdElectricSusceptibility, protocol=2), subtype=128),
+                    "bornChargeArray": Binary(pickle.dumps(bornChargeArray, protocol=2), subtype=128),
+                    "bornChargeNormalModeBasis": Binary(pickle.dumps(selected_structure.bornChargeNormalModeBasis, protocol=2), subtype=128),
+                    "intRaman": json.dumps(selected_structure.intRaman)}
 
         structure_id = structures.insert_one(structure).inserted_id
         print("Done", structure_id)
