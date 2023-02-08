@@ -142,7 +142,8 @@ class crystalOut():
 
         self.atomicMasses = self.get_atomic_mass()
         self.intRaman = self.parsed_data["intensities"]["polycrystalline_intensities"]
-        self.dielectricTensor, self.vibContributionsDielectric = self.get_dielectric_tensor()
+        self.dielectricTensor = self.get_dielectric_tensor()
+        self.vibContributionsDielectricSum, self.vibContributionsDielectric = self.get_vibrational_contributions()
         self.secondElectricSusceptibility = self.get_second_electric_susceptibiliy()
         self.thirdElectricSusceptibility = self.get_third_electric_susceptibiliy()
         self.bornCharge, self.bornChargeNormalModeBasis = self.get_born_charge()
@@ -300,6 +301,21 @@ class crystalOut():
 
     def get_dielectric_tensor(self):
         dielectric_tensor = np.zeros([3, 3])
+        readUntil(self.file, "POLARIZABILITY (ALPHA), DIELECTRIC (EPSILON) AND FIRST-ORDER ELECTRIC")
+        for i in range(3):
+            line = self.file.readline()
+        for i in range(6):
+            line = self.file.readline().split()
+            perm = list(itertools.permutations(line[1]))
+            for p in perm:
+                index1 = xyz_to_num[p[0]]
+                index2 = xyz_to_num[p[1]]
+                dielectric_tensor[index1, index2] = float(line[4])
+        self.file.seek(0)
+        return dielectric_tensor
+
+    def get_vibrational_contributions(self):
+        dielectric_sum = np.zeros([3, 3])
         vibrational_contributions = {}
         readUntil(self.file, "VIBRATIONAL CONTRIBUTIONS TO THE STATIC DIELECTRIC TENSOR (OSCILLATOR")
         for i in range(18):
@@ -318,9 +334,9 @@ class crystalOut():
         line = self.file.readline()
         for i in range(3):
             line = self.file.readline().split()
-            dielectric_tensor[i, :] = [float(i) for i in line]
+            dielectric_sum[i, :] = [float(i) for i in line]
         self.file.seek(0)
-        return dielectric_tensor, vibrational_contributions
+        return dielectric_sum, vibrational_contributions
 
     def get_second_electric_susceptibiliy(self):
         tensor = np.zeros([3, 3, 3])
