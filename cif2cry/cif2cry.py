@@ -1,10 +1,11 @@
 # required in working directory: this script, icsd_cif.txt, basis_sets/, icsd_cif/
-# Usage example: python cif2cry-v20230206.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
-# mono; (in last version) fixed for rhombohedral
+# Usage example: python cif2cry-v20230228.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
+# space group symbol for mono and ortho for correct symmetry operations of CRYSTAL; (in last version) rhom prim
 import yaml
 import argparse
 import os
-from pymatgen import Structure
+import re
+from pymatgen import Structure    # pymatgen.core for later pmg versions
 from pymatgen.core.periodic_table import Element
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from itertools import combinations
@@ -33,53 +34,68 @@ def yaml_basis_set(path_bs):
             yaml.dump(dict_bs, yaml_file, default_flow_style=False)
 
 
+def search_sg_symbol(cif_path):
+    """
+    grep space group symbol from ICSD CIF file
+    """
+    with open(cif_path, 'r') as f:
+        for line in f:
+            if re.search("_space_group_name_H-M_alt", line):
+                return line.split("'")[-2]
+
+
 def minimal_set_latt(struc):
     obj_sga = SpacegroupAnalyzer(struc)
     latt_type = obj_sga.get_lattice_type() # tells hex/rhom from trigonal, so better than get_crystal_system()
     dict_out = {}                          # alternatively, use the latter and treat all trigonal using hexagonal cell
-    rhom = False        # the only difference: rhombohedral will then use larger hex conventional cell, more expensive
+    rhom = False        # the only difference: rhombohedral will then use larger hex conventional cell as input
     rhom_prim = None
+    mono = False
+    ortho = False
     if latt_type == "cubic":
         dict_out['latt'] = (struc.lattice.abc[0],)    # to define a tuple of one element
     elif latt_type == "hexagonal" or latt_type == "tetragonal":
         dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[2]
     elif latt_type == "rhombohedral":
-        struc_stprim = obj_sga.get_primitive_standard_structure() # standard primitive cell (rhombohedral representation)
+        struc_stprim = obj_sga.get_primitive_standard_structure() # standard prim cell (rhombohedral representation)
         dict_out['latt'] = struc_stprim.lattice.abc[0], struc_stprim.lattice.angles[0]
         rhom = True    # v2023
         rhom_prim = struc_stprim    # v2023
     elif latt_type == "orthorhombic":
         dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2]
+        ortho = True    # v20230228
     elif latt_type == 'monoclinic':
         other_angle1 = 0.0; other_angle2 = 0.0
-        # Can also use: unique_index = [n for n in range(0, 3) if struc.lattice.angles.count(struc.lattice.angles[n]) == 1]
-        if struc.lattice.angles.count(struc.lattice.angles[1]) == 1: # if beta unique (b uniquely perp), put a, b, c, beta
+        # Can also: unique_index = [n for n in range(0, 3) if struc.lattice.angles.count(struc.lattice.angles[n]) == 1]
+        if struc.lattice.angles.count(struc.lattice.angles[1]) == 1: # if beta unique (b uniquely perp), put abc & beta
             dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2], struc.lattice.angles[1]
             other_angle1 = struc.lattice.angles[0]; other_angle2 = struc.lattice.angles[2]
-        elif struc.lattice.angles.count(struc.lattice.angles[2]) == 1: # if gamma unique (c uniquely perp), put a, b, c, gamma
+        elif struc.lattice.angles.count(struc.lattice.angles[2]) == 1: # if gamma unique (c uniquely perp), abc & gamma
             dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2], struc.lattice.angles[2]
             other_angle1 = struc.lattice.angles[0]; other_angle2 = struc.lattice.angles[1]
-        elif struc.lattice.angles.count(struc.lattice.angles[0]) == 1: # if alpha unique (not standard), put a, b, c, alpha
+        elif struc.lattice.angles.count(struc.lattice.angles[0]) == 1: # if alpha unique (not standard), abc & alpha
             dict_out['latt'] = struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2], struc.lattice.angles[0]
             other_angle1 = struc.lattice.angles[1]; other_angle2 = struc.lattice.angles[2]
-        if other_angle1 != other_angle2:    # to make sure the ICSD CIF is in standard monoclinic cell (not primitive cell for base-centered monoclinic)
+        if other_angle1 != other_angle2:    # to make sure the ICSD CIF is in standard monoclinic cell (not primit-
             print("problem with monoclinic: the other two angles are not equal")
-        if other_angle1 != 90.0:
+        if other_angle1 != 90.0:            # ive cell for base-centered monoclinic)
             print("problem with monoclinic: the other two angles are not 90 degree")
+        mono = True    # v20230228
     elif latt_type == "triclinic":
         dict_out['latt'] = (struc.lattice.abc[0], struc.lattice.abc[1], struc.lattice.abc[2],
                             struc.lattice.angles[0], struc.lattice.angles[1], struc.lattice.angles[2])
     dict_out['set_num'] = len(dict_out['latt'])
-    return dict_out, rhom, rhom_prim
+    return dict_out, rhom, rhom_prim, mono, ortho
 
 
 def cif_to_crystal(cif_file, dict_bs, basis_type, functional_type):
     s = Structure.from_file("./icsd_cif/" + cif_file)    # added directory for the cif_file
-    dict_latt, rhom, rhom_prim = minimal_set_latt(s)
+    dict_latt, rhom, rhom_prim, mono, ortho = minimal_set_latt(s)
     if rhom:    # v2023 if s is rhombohedral, change it to primitive from beginning
         s = rhom_prim
     sga = SpacegroupAnalyzer(s)
     sgn = sga.get_space_group_number()
+    sg_symbol = search_sg_symbol("./icsd_cif/" + cif_file)
     s_symm = sga.get_symmetrized_structure()    # object of SymmetrizedStructure (can extract unique coords) (v1216)
     sites = s_symm.equivalent_sites    # list of lists of equivalent sites (PeriodicSite) (v1226)
     sites_indices = s_symm.equivalent_indices    # list of lists of equivalent-sites indices (v1226)
@@ -88,10 +104,11 @@ def cif_to_crystal(cif_file, dict_bs, basis_type, functional_type):
     cry += cif_file + "\n"
     cry += "CRYSTAL\n"
     if rhom:    # v2023 (all rhom converted to standard primitive, so all rhom should use IFHR=1, a and alpha)
-        cry += "0 1 0\n"
+        cry += "0 1 0\n" + str(sgn) + "\n"
+    if mono or ortho:    # v2023 (all mono and ortho use space group symbols, so IFLAG=1)
+        cry += "1 0 0\n" + sg_symbol + "\n"
     else:
-        cry += "0 0 0\n"
-    cry += str(sgn) + "\n"
+        cry += "0 0 0\n" + str(sgn) + "\n"
     format_lattice = '{:> 3.12f} ' * dict_latt['set_num'] + '\n'
     cry += format_lattice.format(*dict_latt['latt'])    # unpack tuple and pass as arguments
     cry += str(n_unique_sites) + "\n"    # use number of unique Wyckoff sites (v1216)
