@@ -1,5 +1,0 @@
-#!/bin/bash
-
-sed -n '/EIGENVALUES (EIGV) OF THE MASS WEIGHTED HESSIAN MATRIX AND HARMONIC TRANSVERSE/,/NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES (IN BOHR)/p' *.out >> temporary
-sed '1, 4d; $d' temporary
-rm temporary
