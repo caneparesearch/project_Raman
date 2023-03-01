@@ -65,7 +65,6 @@
 238665	P 1 21/a 1	As2 O3
 360	P 1 21/n 1	As4 S4
 86228	C 1 2/c 1	As S
-182302	P b c 21	As S    THIS ONE CAUSES ERROR FOR THE cif2cry SCRIPT, has partial occupancy
 15239	P 1 21/n 1	As2 S3
 185819	P -1	As2 S3
 16105	P n m a	As4 S3
