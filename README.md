@@ -8,6 +8,6 @@ Atomic--orbital basis sets are collected from https://www.crystal.unito.it/basis
 ## cryoutput_parsing_databse
 *crystal17_output_files* contains all CRYSTAL output files (.out) that include all the calculated thermodynamic and vibrational properties.\
 *crystal_out.py* parses the CRYSTAL output files.\
-*crystal_mongo.py* writes to and reads from our MongoDB database.\
+*crystal_mongo.py* writes to and reads from our MongoDB database.
 ## web_interface
 Code to build a web interface that allows users to interactively query compounds and visualize their Raman spectra.
