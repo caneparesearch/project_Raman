@@ -13,12 +13,12 @@ from crystal_out import crystalOut
 
 def crystal_mongo_drone():
     password = input("Enter mongodb password for username raman_ml:")
-    all_crystal_outputs = glob.glob("crystal17_output_files/*/*.out")
+    all_crystal_outputs = glob.glob("./crystal17_output_files/calc-Sb2O5_15_icsd1422_tzvp_PBE0/Sb2O5_15.out")
     print("Found", len(all_crystal_outputs), "structures to be loaded into mongodb...")
 
-    print("Structures identified to have errors:")
-    print("popped:", all_crystal_outputs.pop(52))
-    print("popped:", all_crystal_outputs.pop(52))
+    #print("Structures identified to have errors:")
+    #print("popped:", all_crystal_outputs.pop(52))
+    #print("popped:", all_crystal_outputs.pop(52))
 
     # rWAhoVdf25suZeqh
     mc = MongoClient(host="orion.nus.edu.sg",username="raman_ml", password=password)
@@ -27,7 +27,7 @@ def crystal_mongo_drone():
 
     for s in all_crystal_outputs:
         selected_structure = crystalOut(s)
-        name = s.split("\\")[-1]
+        name = s.split("calc-")[-1].split("_tzvp")[0]
         print("Working on", name)
         bornChargeArrayList = []
         for val in selected_structure.bornCharge.values():
