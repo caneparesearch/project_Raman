@@ -1,6 +1,6 @@
 # required in working directory: this script, icsd_cif.txt, basis_sets/, icsd_cif/
-# Usage example: python cif2cry-v20230228.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
-# space group symbol for mono and ortho for correct symmetry operations of CRYSTAL; (in last version) rhom prim
+# Usage example: python cif2cry-v20230309.py icsd_cif.txt -ubs --basis tzvp --functional PBE0
+# debug double header for rhom; (in last versions) rhom prim, mono ortho SGsymbol
 import yaml
 import argparse
 import os
@@ -105,7 +105,7 @@ def cif_to_crystal(cif_file, dict_bs, basis_type, functional_type):
     cry += "CRYSTAL\n"
     if rhom:    # v2023 (all rhom converted to standard primitive, so all rhom should use IFHR=1, a and alpha)
         cry += "0 1 0\n" + str(sgn) + "\n"
-    if mono or ortho:    # v2023 (all mono and ortho use space group symbols, so IFLAG=1)
+    elif mono or ortho:    # v2023 (all mono and ortho use space group symbols, so IFLAG=1)
         cry += "1 0 0\n" + sg_symbol + "\n"
     else:
         cry += "0 0 0\n" + str(sgn) + "\n"
