@@ -105,6 +105,7 @@ class crystalOut():
                                            "cryst_asymm_atom_lines": []},
                             "intensities": {"polycrystalline_intensities": []}}
 
+        self.raman_temp, self.raman_wavelength = self.get_raman_exp()
         cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines = self.get_cell_params()
 
         self.parsed_data["cell"]["a"], self.parsed_data["cell"]["b"], self.parsed_data["cell"]["c"], \
@@ -248,6 +249,11 @@ class crystalOut():
             energy = energy_line[26:48].strip()
 
         return cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines
+
+    def get_raman_exp(self):
+        readUntil(self.file, "RAMANEXP")
+        temp, wavelength = self.file.readline().split(", ")
+        return temp, wavelength
 
     def get_atoms_coords(self, atom_lines):
         atom_lines_ = atom_lines.split("\n")
