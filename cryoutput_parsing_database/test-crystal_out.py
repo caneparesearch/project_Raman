@@ -2,7 +2,7 @@ from crystal_out import crystalOut
 import numpy as np
 import matplotlib.pyplot as plt
 
-Na3PS4 = crystalOut("cryoutput_parsing_database\\crystal17_output_files\\calc-Sb2Te_164_icsd69557_tzvp_PBE0\\Sb2Te_164.out")
+Na3PS4 = crystalOut("./cryoutput_parsing_database/crystal17_output_files/calc-Sb2O5_15_icsd1422_tzvp_PBE0/Sb2O5_15.out")
 print("structure:\n", Na3PS4.structure)
 print("space group", Na3PS4.parsed_data["space_group"])
 print("atomic masses", Na3PS4.atomicMasses)

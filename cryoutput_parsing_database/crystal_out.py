@@ -168,7 +168,7 @@ class crystalOut():
                 print("Space group could not be found. Assuming P1. Please check.")
                 sg_name = "P 1"
                 sg_num = 1
-                self.file.seek(0)
+        self.file.seek(0)
         return sg_name, sg_num
 
     def get_cell_params(self):
@@ -247,13 +247,14 @@ class crystalOut():
         energy_line = readUntil(self.file, "TOTAL ENERGY(DFT)(AU)")
         if len(energy_line) > 48:
             energy = energy_line[26:48].strip()
-
+        self.file.seek(0)
         return cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines
 
     def get_raman_exp(self):
         readUntil(self.file, "RAMANEXP")
         temp, wavelength = self.file.readline().split(", ")
-        return temp, wavelength
+        self.file.seek(0)
+        return int(temp), int(wavelength)
 
     def get_atoms_coords(self, atom_lines):
         atom_lines_ = atom_lines.split("\n")
@@ -479,7 +480,7 @@ class crystalOut():
         else:
             raise FileNotFoundError("Please place HESSFREQ.DAT file in the same directory as the CRYSTAL .out file")
 
-    def get_convoluted_spectra(self, sigma, gamma, padding=30, resolution=1000):
+    def get_convoluted_spectra(self, sigma, gamma, wavenumber_range=(0,1000), resolution=1000):
         """
         Returns: 
             Frequencies (np.array), Intensities (np.array) of convolution of Raman spectra intensities calculated.
@@ -492,7 +493,7 @@ class crystalOut():
             resolution (int): Number of points to compute between the max and min. Default=1000.
         """
         data = np.array(list(self.intRaman.items()))
-        frequencies = np.linspace(min(data[:, 0]) - padding, max(data[:, 0]) + padding, resolution)
+        frequencies = np.linspace(wavenumber_range[0], wavenumber_range[1], resolution)
         convoluted_intensities = np.zeros((resolution))
         for i in range(data.shape[0]):
             freq = data[i, 0]
