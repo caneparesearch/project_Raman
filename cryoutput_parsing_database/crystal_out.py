@@ -9,6 +9,7 @@ from pymatgen.core import Lattice, Structure
 import itertools
 import os
 import warnings
+from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from scipy.special import voigt_profile
 
 
@@ -32,7 +33,7 @@ xyz_to_num = {"X": 0, "Y": 1, "Z": 2}
 spacegroups = {
     "P 1": 1, "P -1": 2, "P 2": 3, "P 21": 4, "C 2": 5, "P M": 6, "P C": 7,
     "C M": 8, "C C": 9, "P 2/M": 10, "P 21/M": 11, "C 2/M": 12, "P 2/C": 13,
-    "P 21/C": 14, "C 2/C": 15, "P 2 2 2": 16, "P 2 2 21": 17,
+    "P 21/C": 14, "P 1 21/A 1": 14, "C 2/C": 15, "P 2 2 2": 16, "P 2 2 21": 17,
     "P 21 21 2": 18, "P 21 21 21": 19, "C 2 2 21": 20, "C 2 2 2": 21,
     "F 2 2 2": 22, "I 2 2 2": 23, "I 21 21 21": 24, "P M M 2": 25,
     "P M C 21": 26, "P C C 2": 27, "P M A 2": 28, "P C A 21": 29,
@@ -97,13 +98,11 @@ class crystalOut():
         self.filename = filename
         self.filedir = os.path.dirname(filename)
         self.file = open(filename, "r")
-        self.parsed_data = {"space_group": (self.get_space_group())[0], "space_group_num": (self.get_space_group())[1],
-                            "cell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0},
+        self.parsed_data = {"cell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0},
                             "crystCell": {"a": 0, "b": 0, "c": 0, "alpha": 0, "beta": 0, "gamma": 0}, "volume": 0,
                             "cryst_volume": 0, "density": 0, "total_energy": 0,
                             "atom_lines": {"all_atom_lines": [], "asymm_atom_lines": [], "cryst_all_atom_lines": [],
-                                           "cryst_asymm_atom_lines": []},
-                            "intensities": {"polycrystalline_intensities": []}}
+                                           "cryst_asymm_atom_lines": []}}
 
         self.raman_temp, self.raman_wavelength = self.get_raman_exp()
         cell, volume_density, energy, all_atom_lines, asymm_atom_lines, crystCell, crystVolume, cryst_all_atom_lines, cryst_asymm_atom_lines = self.get_cell_params()
@@ -116,8 +115,6 @@ class crystalOut():
         self.parsed_data["atom_lines"]["all_atom_lines"] = all_atom_lines
         self.parsed_data["atom_lines"]["asymm_atom_lines"] = asymm_atom_lines
 
-        self.parsed_data["intensities"]["polycrystalline_intensities"] = self.get_raman_intensities()
-
         self.atoms, self.coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["all_atom_lines"])
         self.asymm_atoms, self.asymm_coords = self.get_atoms_coords(self.parsed_data["atom_lines"]["asymm_atom_lines"])
 
@@ -127,6 +124,7 @@ class crystalOut():
                                                beta=self.parsed_data["cell"]['beta'],
                                                gamma=self.parsed_data["cell"]['gamma'])
         self.structure = Structure(self.lattice, self.atoms, self.coords)
+        self.space_group, self.space_group_no = self.get_space_group()
 
         if crystCell:
             self.parsed_data["crystCell"]["a"], self.parsed_data["crystCell"]["b"], self.parsed_data["crystCell"]["c"], \
@@ -142,7 +140,7 @@ class crystalOut():
                 self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"])
 
         self.atomicMasses = self.get_atomic_mass()
-        self.intRaman = self.parsed_data["intensities"]["polycrystalline_intensities"]
+        self.intRaman = self.get_raman_intensities()
         self.dielectricTensor = self.get_dielectric_tensor()
         self.vibContributionsDielectricSum, self.vibContributionsDielectric = self.get_vibrational_contributions()
         self.secondElectricSusceptibility = self.get_second_electric_susceptibiliy()
@@ -152,24 +150,26 @@ class crystalOut():
         self.file.close()
 
     def get_space_group(self):
-        sg = readUntil(self.file, "SPACE GROUP")
-        if len(sg) > 0:
-            sg_name = sg.split(":")[-1].strip()
-            sg_num = spacegroups[sg_name]
-        else:
-            self.file.seek(0)
-            sg = readUntil(self.file, "SPACE  GROUP")
-            if len(sg) > 0:
-                sg_num = int(sg.split(":")[-1].strip())
-                for i, j in spacegroups.items():
-                    if sg_num == j:
-                        sg_name = i
-            else:
-                print("Space group could not be found. Assuming P1. Please check.")
-                sg_name = "P 1"
-                sg_num = 1
-        self.file.seek(0)
-        return sg_name, sg_num
+        # sg = readUntil(self.file, "SPACE GROUP")
+        # if len(sg) > 0:
+        #     sg_name = sg.split(":")[-1].strip()
+        #     sg_num = spacegroups[sg_name]
+        # else:
+        #     self.file.seek(0)
+        #     sg = readUntil(self.file, "SPACE  GROUP")
+        #     if len(sg) > 0:
+        #         sg_num = int(sg.split(":")[-1].strip())
+        #         for i, j in spacegroups.items():
+        #             if sg_num == j:
+        #                 sg_name = i
+        #     else:
+        #         print("Space group could not be found. Assuming P1. Please check.")
+        #         sg_name = "P 1"
+        #         sg_num = 1
+        # self.file.seek(0)
+        # return sg_name, sg_num
+        spg = SpacegroupAnalyzer(self.structure)
+        return spg.get_space_group_symbol(), spg.get_space_group_number()
 
     def get_cell_params(self):
         pos = self.file.tell()

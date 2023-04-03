@@ -2,9 +2,9 @@ from crystal_out import crystalOut
 import numpy as np
 import matplotlib.pyplot as plt
 
-Na3PS4 = crystalOut("./cryoutput_parsing_database/crystal17_output_files/calc-Sb2O5_15_icsd1422_tzvp_PBE0/Sb2O5_15.out")
+Na3PS4 = crystalOut("cryoutput_parsing_database\crystal17_output_files\calc-AsS2_4_icsd424590_tzvp_PBE0\AsS2_4.out")
 print("structure:\n", Na3PS4.structure)
-print("space group", Na3PS4.parsed_data["space_group"])
+print("space group", Na3PS4.space_group)
 print("atomic masses", Na3PS4.atomicMasses)
 print("vibrational contributions {mode:tensor}:\n", Na3PS4.vibContributionsDielectric)
 print("vibrational contributions sum:\n", Na3PS4.vibContributionsDielectricSum)
