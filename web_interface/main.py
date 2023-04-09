@@ -1,17 +1,46 @@
 import streamlit as st
-#import numpy as np
+from pymongo import MongoClient
+import json
+import numpy as np
+from scipy.special import voigt_profile
 #import pandas as pd
 #import plotly.express as px
-
 import plotly.graph_objects as go
 
 #### functions ####
+@st.cache_resource
+def init_connection():
+    return MongoClient(**st.secrets["mongo"])
+
+client = init_connection()
+
+@st.cache_data(ttl=600)
 def fetch_data_from_mongo(structure_name):
-    """
-    todo
-    # use load_structure_from_mongo
-    """
-    return 
+    db = client["raman_ml"]
+    structures = db.structures
+    myquery = { "structure_name": { "$regex": f"^{structure_name}_" } }
+    doc = structures.find(myquery)
+    data = []
+    for s in doc:
+        name = s["structure_name"]
+        intRaman = json.loads(s["intRaman"])
+        data.append([name,intRaman])
+    return data
+
+def get_convoluted_spectra(intRaman, sigma, gamma, wavenumber_range=(0,1000), resolution=1000):
+    data = np.array(list(intRaman.items()))
+    frequencies = np.linspace(wavenumber_range[0], wavenumber_range[1], resolution)
+    convoluted_intensities = np.zeros((resolution))
+    for i in range(data.shape[0]):
+        freq = float(data[i, 0])
+        intensity = float(data[i, 1])
+        convolution_single_peak = []
+        for x in frequencies:
+            convoluted_amplitude = voigt_profile(x - freq, sigma, gamma) * intensity
+            convolution_single_peak.append(convoluted_amplitude)
+        convoluted_intensities += np.array(convolution_single_peak)
+
+    return frequencies, convoluted_intensities
 
 def show_data_on_page(structure_data):
     """
@@ -36,11 +65,20 @@ st.title("Hybrid-Functional Computational Raman Database for Inorganic Compounds
 structure_name = st.text_input("Search a compound: e.g. As2Se3")
 
 if structure_name:
-    structure_data, spectra = fetch_data_from_mongo(structure_name)
-    if structure_data:
-        show_data_on_page(structure_data)
-        
-        spectra_fig = plot_raman_spectra(frequencies, convoluted_intensities)
-        st.plotly_chart(spectra_fig)
+    structures = fetch_data_from_mongo(structure_name)
+    if len(structures) > 0:
+        names = [s[0] for s in structures]
+        tabs = st.tabs(names)
+        for i in range(len(names)):
+            with tabs[i]:
+                col1, col2 = st.columns(2)
+                with col1:
+                    sigma = st.slider("Sigma",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_sigma")
+                with col2:
+                    gamma = st.slider("Gamma",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma")
+                wavenumber_range = st.slider('Wavenumber range', 0.0, 1000.0, (25.0, 600.0),step=10.0,key=f"{names[i]}_range")
+                frequencies, convoluted_intensities = get_convoluted_spectra(structures[i][1],sigma,gamma,wavenumber_range)
+                spectra_fig = plot_raman_spectra(frequencies, convoluted_intensities)
+                st.plotly_chart(spectra_fig)
     else:
         st.write("We don't have Raman spectra for this compound yet.")
