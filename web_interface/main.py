@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import json
 import numpy as np
 from scipy.special import voigt_profile
-#import pandas as pd
+import pandas as pd
 #import plotly.express as px
 import plotly.graph_objects as go
 
@@ -80,5 +80,8 @@ if structure_name:
                 frequencies, convoluted_intensities = get_convoluted_spectra(structures[i][1],sigma,gamma,wavenumber_range)
                 spectra_fig = plot_raman_spectra(frequencies, convoluted_intensities)
                 st.plotly_chart(spectra_fig)
+                st.subheader("Calculated values")
+                df = pd.DataFrame(structures[i][1].items(), columns=["Wavenumber", "Intensity (a.u.)"])
+                st.table(df)
     else:
         st.write("We don't have Raman spectra for this compound yet.")

@@ -22,10 +22,10 @@ def readUntil(f, s):
     """
     while True:
         line = f.readline()
-        if len(line) == 0:
-            return ""
         if s in line:
             return line.strip()
+        if not line:
+            raise ValueError(f"NOT FOUND: {s}")
 
 
 xyz_to_num = {"X": 0, "Y": 1, "Z": 2}
@@ -173,16 +173,18 @@ class crystalOut():
 
     def get_cell_params(self):
         pos = self.file.tell()
-        if len(readUntil(self.file, "FINAL OPTIMIZED GEOMETRY - DIMENSIONALITY OF THE SYSTEM      3")) > 0:
+        try:
+            readUntil(self.file, "FINAL OPTIMIZED GEOMETRY - DIMENSIONALITY OF THE SYSTEM      3")
             optimized = True
-            print(">>>>>>> Optimized structure found.")
-        else:
+            #print(">>>>>>> Optimized structure found.")
+        except:
             optimized = False
         self.file.seek(pos)
 
-        if len(readUntil(self.file, "TRANSFORMATION MATRIX PRIMITIVE-CRYSTALLOGRAPHIC CELL")) > 0:
+        try:
+            readUntil(self.file, "TRANSFORMATION MATRIX PRIMITIVE-CRYSTALLOGRAPHIC CELL")
             isCrystCell = True
-        else:
+        except ValueError:
             isCrystCell = False
         self.file.seek(pos)
 
@@ -219,7 +221,7 @@ class crystalOut():
                 asymm_atom_lines += atom + str(n) + " " + atom + " " + " ".join(line[4:]) + "\n"
 
         if isCrystCell:
-            print(">>>>>>> CRYSTALLOGRAPHIC CELL found.")
+            #print(">>>>>>> CRYSTALLOGRAPHIC CELL found.")
             readUntil(self.file, "*************************************************")
             crystVolume = self.file.readline().split()[3].strip(")")
             self.file.readline()
