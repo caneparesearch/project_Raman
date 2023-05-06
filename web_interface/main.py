@@ -4,8 +4,10 @@ import json
 import numpy as np
 from scipy.special import voigt_profile
 import pandas as pd
-#import plotly.express as px
+from pymatgen.core.structure import Structure
+from pymatgen.io.cif import CifWriter
 import plotly.graph_objects as go
+import py3Dmol
 
 #### functions ####
 @st.cache_resource
@@ -24,7 +26,8 @@ def fetch_data_from_mongo(structure_name):
     for s in doc:
         name = s["structure_name"]
         intRaman = json.loads(s["intRaman"])
-        data.append([name,intRaman])
+        structure = Structure.from_dict(json.loads(s["structure"]))
+        data.append([name,intRaman,structure])
     return data
 
 def get_convoluted_spectra(intRaman, sigma, gamma, wavenumber_range=(0,1000), resolution=1000):
@@ -42,11 +45,26 @@ def get_convoluted_spectra(intRaman, sigma, gamma, wavenumber_range=(0,1000), re
 
     return frequencies, convoluted_intensities
 
-def show_data_on_page(structure_data):
-    """
-    todo
-    """
-    st.write(structure_data)
+def show_data_on_page(structure):
+    cif_file = CifWriter(structure)
+
+    view = py3Dmol.view()
+
+    view.addModel(str(cif_file), "cif",
+        {"doAssembly" : True,
+        "normalizeAssembly":True,
+        'duplicateAssemblyAtoms':False,
+        'noComputeSecondaryStructure':False})
+    view.setStyle({'sphere':{"scale":0.25},
+                    'stick':{"radius":0.15}})
+
+    view.addUnitCell()
+    view.zoomTo()
+    view.render()
+    # Get the JavaScript code for the view and display it in Streamlit
+    t = view.js()
+    html = t.startjs + "\n" + t.endjs + "\n"
+    st.components.v1.html(html, width=600, height=400)
     return 
 
 def plot_raman_spectra(x, y):
@@ -71,6 +89,7 @@ if structure_name:
         tabs = st.tabs(names)
         for i in range(len(names)):
             with tabs[i]:
+                show_data_on_page(structures[i][2])
                 col1, col2 = st.columns(2)
                 with col1:
                     sigma = st.slider("Sigma",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_sigma")

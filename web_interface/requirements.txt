@@ -4,3 +4,5 @@ scipy
 pandas
 plotly
 pymongo
+pymatgen
+py3Dmol
