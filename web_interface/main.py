@@ -5,9 +5,8 @@ import numpy as np
 from scipy.special import voigt_profile
 import pandas as pd
 from pymatgen.core.structure import Structure
-from pymatgen.io.cif import CifWriter
+#from pymatgen.io.cif import CifWriter
 import plotly.graph_objects as go
-import py3Dmol
 
 #### functions ####
 @st.cache_resource
@@ -46,25 +45,25 @@ def get_convoluted_spectra(intRaman, sigma, gamma, wavenumber_range=(0,1000), re
     return frequencies, convoluted_intensities
 
 def show_data_on_page(structure):
-    cif_file = CifWriter(structure)
+    # cif_file = CifWriter(structure)
 
-    view = py3Dmol.view()
+    # view = py3Dmol.view()
 
-    view.addModel(str(cif_file), "cif",
-        {"doAssembly" : True,
-        "normalizeAssembly":True,
-        'duplicateAssemblyAtoms':False,
-        'noComputeSecondaryStructure':False})
-    view.setStyle({'sphere':{"scale":0.25},
-                    'stick':{"radius":0.15}})
+    # view.addModel(str(cif_file), "cif",
+    #     {"doAssembly" : True,
+    #     "normalizeAssembly":True,
+    #     'duplicateAssemblyAtoms':False,
+    #     'noComputeSecondaryStructure':False})
+    # view.setStyle({'sphere':{"scale":0.25},
+    #                 'stick':{"radius":0.15}})
 
-    view.addUnitCell()
-    view.zoomTo()
-    view.render()
-    # Get the JavaScript code for the view and display it in Streamlit
-    t = view.js()
-    html = t.startjs + "\n" + t.endjs + "\n"
-    st.components.v1.html(html, width=600, height=400)
+    # view.addUnitCell()
+    # view.zoomTo()
+    # view.render()
+    # # Get the JavaScript code for the view and display it in Streamlit
+    # t = view.js()
+    # html = t.startjs + "\n" + t.endjs + "\n"
+    # st.components.v1.html(html, width=600, height=400)
     return 
 
 def plot_raman_spectra(x, y):
