@@ -1,5 +1,6 @@
 import streamlit as st
 from pymongo import MongoClient
+import pandas as pd
 
 st.markdown("# Compound List")
 st.sidebar.markdown("# Compound List")
@@ -15,8 +16,10 @@ def get_compound_list():
     db = client["raman_ml"]
     list = []
     for structure in db.structures.find():
-        list.append(structure["structure_name"])
+        full_name = structure["structure_name"].split("_")
+        list.append([full_name[0], full_name[-1].replace("icsd","")])
     return list
 
 compound_list = get_compound_list()
-st.table(compound_list)
+df = pd.DataFrame(compound_list, columns=["Formula", "ICSD Number"])
+st.table(df)

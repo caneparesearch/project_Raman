@@ -25,25 +25,23 @@ def crystal_mongo_drone():
             selected_structure = crystalOut(s)
         except ValueError as e:
             print(name, e)
-        bornChargeArrayList = []
-        for val in selected_structure.bornCharge.values():
-            bornChargeArrayList.append(val["Born Charge"])
-        bornChargeArray = np.concatenate(bornChargeArrayList, dtype = "float64")
+        for val in selected_structure.born_charge.values():
+            val["Born Charge"] = val["Born Charge"].tolist()
 
         structure = {"structure_name": name,
                     "structure":json.dumps(selected_structure.structure.as_dict()), 
-                    "spaceGroup":selected_structure.space_group,
-                    "thermodynamicTerms":json.dumps(selected_structure.thermodynamicTerms),
-                    "dielectricTensor":Binary(pickle.dumps(selected_structure.dielectricTensor, protocol=2), subtype=128),
-                    "vibContributionsDielectric":Binary(pickle.dumps(selected_structure.vibContributionsDielectric, protocol=2), subtype=128),
-                    "vibContributionsDielectricSum":Binary(pickle.dumps(selected_structure.vibContributionsDielectricSum, protocol=2), subtype=128),
-                    "secondElectricSusceptibility":Binary(pickle.dumps(selected_structure.secondElectricSusceptibility, protocol=2), subtype=128),
-                    "thirdElectricSusceptibility":Binary(pickle.dumps(selected_structure.thirdElectricSusceptibility, protocol=2), subtype=128),
-                    "bornChargeArray":Binary(pickle.dumps(selected_structure.bornCharge, protocol=2), subtype=128),
-                    "bornChargeNormalModeBasis":Binary(pickle.dumps(selected_structure.bornChargeNormalModeBasis, protocol=2), subtype=128),
-                    "intRaman":json.dumps(selected_structure.intRaman),
-                    "ramanTemp": selected_structure.raman_temp,
-                    "ramanWavelength": selected_structure.raman_wavelength}
+                    "space_group":selected_structure.space_group,
+                    "thermodynamic_terms":json.dumps(selected_structure.thermodynamic_terms),
+                    "dielectric_tensor":Binary(pickle.dumps(selected_structure.dielectric_tensor, protocol=2), subtype=128),
+                    "vib_contributions_dielectric":Binary(pickle.dumps(selected_structure.vib_contributions_dielectric, protocol=2), subtype=128),
+                    "vib_contributions_dielectric_sum":Binary(pickle.dumps(selected_structure.vib_contributions_dielectric_sum, protocol=2), subtype=128),
+                    "second_electric_susceptibility":Binary(pickle.dumps(selected_structure.second_electric_susceptibility, protocol=2), subtype=128),
+                    "third_electric_susceptibiliy":Binary(pickle.dumps(selected_structure.third_electric_susceptibiliy, protocol=2), subtype=128),
+                    "born_charge":json.dumps(selected_structure.born_charge),
+                    "born_charge_normal_mode":Binary(pickle.dumps(selected_structure.born_charge_normal_mode, protocol=2), subtype=128),
+                    "raman_intensities":json.dumps(selected_structure.raman_intensities),
+                    "raman_temp": selected_structure.raman_temp,
+                    "raman_wavelength": selected_structure.raman_wavelength}
 
         structure_id = structures.insert_one(structure).inserted_id
         print("Done", structure_id)
@@ -61,20 +59,43 @@ def load_structure_from_mongo(structure_name):
     data = []
     for s in doc:
         structure = Structure.from_dict(json.loads(s["structure"]))
-        spaceGroup = s["spaceGroup"]
-        thermodynamicTerms = json.loads(s["thermodynamicTerms"])
-        intRaman = json.loads(s["intRaman"])
+        space_group = s["space_group"]
+        thermodynamic_terms = json.loads(s["thermodynamic_terms"])
+        raman_intensities = json.loads(s["raman_intensities"])
 
-        dielectricTensor = pickle.loads(s["dielectricTensor"])
-        vibContributionsDielectric = pickle.loads(s["vibContributionsDielectric"])
-        secondElectricSusceptibility = pickle.loads(s["secondElectricSusceptibility"])
-        thirdElectricSusceptibility = pickle.loads(s["thirdElectricSusceptibility"])
-        bornChargeArray = pickle.loads(s["bornChargeArray"])
-        bornChargeNormalModeBasis = pickle.loads(s["bornChargeNormalModeBasis"])
+        dielectric_tensor = pickle.loads(s["dielectric_tensor"])
+        vib_contributions_dielectric = pickle.loads(s["vib_contributions_dielectric"])
+        second_electric_susceptibility = pickle.loads(s["second_electric_susceptibility"])
+        third_electric_susceptibiliy = pickle.loads(s["third_electric_susceptibiliy"])
+        born_charge = json.loads(s["born_charge"])
+        born_charge_normal_mode = pickle.loads(s["born_charge_normal_mode"])
 
-        data.append([structure, spaceGroup, thermodynamicTerms, intRaman, dielectricTensor, vibContributionsDielectric, secondElectricSusceptibility, thirdElectricSusceptibility, bornChargeArray, bornChargeNormalModeBasis])
+        data.append([structure, space_group, thermodynamic_terms, raman_intensities, dielectric_tensor, vib_contributions_dielectric, second_electric_susceptibility, third_electric_susceptibiliy, born_charge, born_charge_normal_mode])
     
     return data
+
+def update_mongo():
+    """
+    not completed
+    """
+    uri = "mongodb+srv://RamanML:CaReRamanProject00@ramanml.utaye2e.mongodb.net/?retryWrites=true&w=majority"
+    mc = MongoClient(uri)
+    db = mc["raman_ml"]
+    structures = db.structures
+    all_crystal_outputs = glob.glob("cryoutput_parsing_database/crystal17_output_files/calc-*/*.out")
+    print("Found", len(all_crystal_outputs), "structures to be loaded into mongodb...")
+    for s in all_crystal_outputs:
+        name = s.split("calc-")[-1].split("_tzvp")[0]
+        print("Working on", name)
+        if name == "CoS2_205_icsd86351":
+            continue
+        try:
+            selected_structure = crystalOut(s)
+        except ValueError as e:
+            print(name, e)
+        myquery = { "structure_name": { "$regex": f"^{name}" } }
+        
+        structures.update_one(myquery, newvalues)
 
 
 if __name__ == '__main__':

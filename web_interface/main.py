@@ -5,9 +5,12 @@ import numpy as np
 from scipy.special import voigt_profile
 import pandas as pd
 from pymatgen.core.structure import Structure
-#from pymatgen.io.cif import CifWriter
+from pymatgen.io.cif import CifWriter
+from plotly.graph_objs.layout import YAxis,XAxis,Margin
 import plotly.graph_objects as go
 
+st.set_page_config(page_title="Raman Database")
+                   
 #### functions ####
 @st.cache_resource
 def init_connection():
@@ -24,18 +27,20 @@ def fetch_data_from_mongo(structure_name):
     data = []
     for s in doc:
         name = s["structure_name"]
-        intRaman = json.loads(s["intRaman"])
+        raman_intensities = json.loads(s["raman_intensities"])
         structure = Structure.from_dict(json.loads(s["structure"]))
-        data.append([name,intRaman,structure])
+        data.append([name,raman_intensities,structure])
     return data
 
-def get_convoluted_spectra(intRaman, sigma, gamma, wavenumber_range=(0,1000), resolution=1000):
-    data = np.array(list(intRaman.items()))
+def get_convoluted_spectra(intRaman, sigma=1, gamma=1, wavenumber_range=(0,1000), resolution=1000):
+    data_freq = list(intRaman.keys())
+    data_int = [x[0] for x in intRaman.values()]
+
     frequencies = np.linspace(wavenumber_range[0], wavenumber_range[1], resolution)
     convoluted_intensities = np.zeros((resolution))
-    for i in range(data.shape[0]):
-        freq = float(data[i, 0])
-        intensity = float(data[i, 1])
+    for i in range(len(data_freq)):
+        freq = float(data_freq[i])
+        intensity = float(data_int[i])
         convolution_single_peak = []
         for x in frequencies:
             convoluted_amplitude = voigt_profile(x - freq, sigma, gamma) * intensity
@@ -44,36 +49,30 @@ def get_convoluted_spectra(intRaman, sigma, gamma, wavenumber_range=(0,1000), re
 
     return frequencies, convoluted_intensities
 
-def show_data_on_page(structure):
-    # cif_file = CifWriter(structure)
-
-    # view = py3Dmol.view()
-
-    # view.addModel(str(cif_file), "cif",
-    #     {"doAssembly" : True,
-    #     "normalizeAssembly":True,
-    #     'duplicateAssemblyAtoms':False,
-    #     'noComputeSecondaryStructure':False})
-    # view.setStyle({'sphere':{"scale":0.25},
-    #                 'stick':{"radius":0.15}})
-
-    # view.addUnitCell()
-    # view.zoomTo()
-    # view.render()
-    # # Get the JavaScript code for the view and display it in Streamlit
-    # t = view.js()
-    # html = t.startjs + "\n" + t.endjs + "\n"
-    # st.components.v1.html(html, width=600, height=400)
-    return 
+def show_structure(structure):
+    return
 
 def plot_raman_spectra(x, y):
-    fig = go.Figure(data=go.Scatter(x=x, y=y))
-    fig.update_layout(title="Raman Spectra", xaxis_title="Wavenumber", yaxis_title="Intensity (a.u.)")
+    layout = go.Layout(title="Raman Spectrum from Voigt Convolution",
+                       xaxis=XAxis(title="Wavenumber (cm<sup>-1</sup>)"),
+                       xaxis2 = XAxis(title="THz", overlaying= 'x', side= 'top'),)
+
+    fig = go.Figure(layout=layout)
+    fig.add_trace(go.Scatter(x=x, y=y))
+    fig.add_trace(go.Scatter(xaxis='x2'))
+    fig.update_layout(yaxis_title="Intensity (arbitrary units)")
+    start, end = x[0], x[-1]
+    fig.update_layout(xaxis1=dict(range=[start, end]), xaxis2=dict(range=[start/0.3335641E+02, end/0.3335641E+02]))
     return fig
 
 #### streamlit main page ####
 
-st.markdown("# Main page")
+col1, col2 = st.columns([3,1])
+with col1:
+    st.markdown("""
+    # Main page""")
+with col2:
+    st.image("web_interface/logo-inter-color.png")
 st.sidebar.markdown("# Main page")
 
 st.title("Hybrid-Functional Computational Raman Database for Inorganic Compounds")
@@ -84,22 +83,26 @@ structure_name = st.text_input("Search a compound: e.g. As2Se3")
 if structure_name:
     structures = fetch_data_from_mongo(structure_name)
     if len(structures) > 0:
-        names = [s[0] for s in structures]
+        names = [f"ICSD: {s[0].split('icsd')[-1]}" for s in structures]
         tabs = st.tabs(names)
         for i in range(len(names)):
             with tabs[i]:
-                show_data_on_page(structures[i][2])
+                show_structure(structures[i][2])
+                container = st.container()
                 col1, col2 = st.columns(2)
                 with col1:
-                    sigma = st.slider("Sigma",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_sigma")
+                    sigma = st.slider("Sigma",help="Standard deviation of Gaussian convolution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_sigma")
                 with col2:
-                    gamma = st.slider("Gamma",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma")
+                    gamma = st.slider("Gamma",help="Half-width at half-maximum of Cauchy distribution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma")
                 wavenumber_range = st.slider('Wavenumber range', 0.0, 1000.0, (25.0, 600.0),step=10.0,key=f"{names[i]}_range")
                 frequencies, convoluted_intensities = get_convoluted_spectra(structures[i][1],sigma,gamma,wavenumber_range)
                 spectra_fig = plot_raman_spectra(frequencies, convoluted_intensities)
-                st.plotly_chart(spectra_fig)
+                container.plotly_chart(spectra_fig)
                 st.subheader("Calculated values")
-                df = pd.DataFrame(structures[i][1].items(), columns=["Wavenumber", "Intensity (a.u.)"])
+                df = pd.DataFrame(structures[i][1].keys(), columns=["Wavenumber (cm-1)"],dtype=float)
+                df.insert(1,"THz", df["Wavenumber (cm-1)"]/0.3335641E+02)
+                df.insert(2,"Intensity (Arbitary Units)", [x[0] for x in structures[i][1].values()])
+                df.insert(3,"IRREP", [x[1] for x in structures[i][1].values()])
                 st.table(df)
     else:
         st.write("We don't have Raman spectra for this compound yet.")

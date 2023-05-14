@@ -10,17 +10,17 @@ import pymatgen.io.cif as cif
 from pymatgen.core import Structure
 
 
-lattice = [[3.84, 0, 0], [0, 3.84, 0], [0, 0, 3.84]]
-coords = [[0, 0, 0], [0.5, 0.5, 0.5]]
-species = ["Si", "Si"]
-structure = Structure(lattice, species, coords)
+# lattice = [[3.84, 0, 0], [0, 3.84, 0], [0, 0, 3.84]]
+# coords = [[0, 0, 0], [0.5, 0.5, 0.5]]
+# species = ["Si", "Si"]
+# structure = Structure(lattice, species, coords)
 
-# Save the pymatgen structure to a CIF file
-cif_file = cif.CifWriter(structure)
-cif_file.write_file("structure.cif")
+# # Save the pymatgen structure to a CIF file
+# cif_file = cif.CifWriter(structure)
+# cif_file.write_file("structure.cif")
 
 # Load the CIF file into py3Dmol and display the structure
-with open("structure.cif", "r") as f:
+with open("test.cif", "r") as f:
     cif_data = f.read()
 
 view = py3Dmol.view()
@@ -29,8 +29,8 @@ view.addModel(cif_data, "cif",
     {"doAssembly" : True,
     "normalizeAssembly":True,
     'duplicateAssemblyAtoms':True})
-view.setStyle({'sphere':{"scale":0.15},
-                'stick':{"radius":0.25}})
+view.setStyle({'sphere':{"scale":0.25},
+                'stick':{"radius":0.15}})
 
 view.addUnitCell()
 view.zoomTo()

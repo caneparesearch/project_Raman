@@ -1,7 +1,6 @@
 # Crystal output file parser: Structure and Raman intensities 
 
 from ast import literal_eval
-import glob
 import json
 import sys
 import numpy as np
@@ -139,14 +138,14 @@ class crystalOut():
             self.cryst_asymm_atoms, self.cryst_asymm_coords = self.get_atoms_coords(
                 self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"])
 
-        self.atomicMasses = self.get_atomic_mass()
-        self.intRaman = self.get_raman_intensities()
-        self.dielectricTensor = self.get_dielectric_tensor()
-        self.vibContributionsDielectricSum, self.vibContributionsDielectric = self.get_vibrational_contributions()
-        self.secondElectricSusceptibility = self.get_second_electric_susceptibiliy()
-        self.thirdElectricSusceptibility = self.get_third_electric_susceptibiliy()
-        self.bornCharge, self.bornChargeNormalModeBasis = self.get_born_charge()
-        self.thermodynamicTerms = self.get_thermodynamic_terms()
+        self.atomic_masses = self.get_atomic_mass()
+        self.raman_intensities = self.get_raman_intensities()
+        self.dielectric_tensor = self.get_dielectric_tensor()
+        self.vib_contributions_dielectric_sum, self.vib_contributions_dielectric = self.get_vibrational_contributions()
+        self.second_electric_susceptibility = self.get_second_electric_susceptibiliy()
+        self.third_electric_susceptibiliy = self.get_third_electric_susceptibiliy()
+        self.born_charge, self.born_charge_normal_mode = self.get_born_charge()
+        self.thermodynamic_terms = self.get_thermodynamic_terms()
         self.file.close()
 
     def get_space_group(self):
@@ -276,9 +275,21 @@ class crystalOut():
     def get_raman_intensities(self):
         """
         returns the intensities as a dict with format frequency: intensity
-        only polycrystalline isotropic intensities (I_tot only), 
-        TODO: add others and add single crystal 
+        only polycrystalline isotropic intensities (I_tot only) and the corresponding IRREP
         """
+        readUntil(self.file, " CONVERSION FACTORS FOR FREQUENCIES:")
+        for _ in range(8):
+            line = self.file.readline()
+        irrep_dict = {}
+        while not line.isspace():
+            line = line.replace("("," ")
+            line = line.replace(")"," ")
+            fields = line.split()
+            frequency = float(fields[3])
+            irrep = fields[5]
+            irrep_dict[frequency] = irrep
+            line = self.file.readline()
+        
         readUntil(self.file, "POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)")
         for i in range(4):
             line = self.file.readline()
@@ -290,8 +301,13 @@ class crystalOut():
             tot_intensity = float(fields[5])
             raman_dict[frequency] = tot_intensity
             line = self.file.readline()
+
+        combined_dict = {}
+        for freq, i in raman_dict.items():
+            combined_dict[freq] = (i, irrep_dict[freq])
+
         self.file.seek(0)
-        return raman_dict
+        return combined_dict
 
     def get_atomic_mass(self):
         readUntil(self.file, "ATOMS ISOTOPIC MASS (AMU) FOR FREQUENCY CALCULATION")
