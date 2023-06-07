@@ -25,8 +25,13 @@ def crystal_mongo_drone():
             selected_structure = crystalOut(s)
         except ValueError as e:
             print(name, e)
-        for val in selected_structure.born_charge.values():
-            val["Born Charge"] = val["Born Charge"].tolist()
+        try:
+            tens_raman = selected_structure.get_raman_tensor()
+        except FileNotFoundError:
+            print(name, "No TENS_RAMAN file")
+            tens_raman = None
+        for item in selected_structure.born_charge:
+            item["Born Charge"] = item["Born Charge"].tolist()
 
         structure = {"structure_name": name,
                     "structure":json.dumps(selected_structure.structure.as_dict()), 
@@ -41,7 +46,8 @@ def crystal_mongo_drone():
                     "born_charge_normal_mode":Binary(pickle.dumps(selected_structure.born_charge_normal_mode, protocol=2), subtype=128),
                     "raman_intensities":json.dumps(selected_structure.raman_intensities),
                     "raman_temp": selected_structure.raman_temp,
-                    "raman_wavelength": selected_structure.raman_wavelength}
+                    "raman_wavelength": selected_structure.raman_wavelength,
+                    "raman_tensor": Binary(pickle.dumps(tens_raman, protocol=2), subtype=128)}
 
         structure_id = structures.insert_one(structure).inserted_id
         print("Done", structure_id)

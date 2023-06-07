@@ -1,13 +1,13 @@
 import streamlit as st
 from pymongo import MongoClient
-import json
+import json, pickle
 import numpy as np
 from scipy.special import voigt_profile
 import pandas as pd
 from pymatgen.core.structure import Structure
-from pymatgen.io.cif import CifWriter
 from plotly.graph_objs.layout import YAxis,XAxis,Margin
 import plotly.graph_objects as go
+from collections import OrderedDict
 
 st.set_page_config(page_title="Raman Database")
                    
@@ -24,17 +24,19 @@ def fetch_data_from_mongo(structure_name):
     structures = db.structures
     myquery = { "structure_name": { "$regex": f"^{structure_name}_" } }
     doc = structures.find(myquery)
-    data = []
+    data = OrderedDict()
     for s in doc:
         name = s["structure_name"]
         raman_intensities = json.loads(s["raman_intensities"])
         structure = Structure.from_dict(json.loads(s["structure"]))
-        data.append([name,raman_intensities,structure])
+        born_charge = json.loads(s["born_charge"])
+        raman_tensor = pickle.loads(s["raman_tensor"])
+        data[name]={"raman_intensities":raman_intensities,"structure":structure,"born_charge":born_charge,"raman_tensor":raman_tensor}
     return data
 
-def get_convoluted_spectra(intRaman, sigma=1, gamma=1, wavenumber_range=(0,1000), resolution=1000):
-    data_freq = list(intRaman.keys())
-    data_int = [x[0] for x in intRaman.values()]
+def get_convoluted_spectra(raman_intensities, sigma=1, gamma=1, wavenumber_range=(0,1000), resolution=1000):
+    data_freq = list(raman_intensities.keys())
+    data_int = [x[1] for x in raman_intensities.values()]
 
     frequencies = np.linspace(wavenumber_range[0], wavenumber_range[1], resolution)
     convoluted_intensities = np.zeros((resolution))
@@ -50,7 +52,7 @@ def get_convoluted_spectra(intRaman, sigma=1, gamma=1, wavenumber_range=(0,1000)
     return frequencies, convoluted_intensities
 
 def show_structure(structure):
-    return
+    pass
 
 def plot_raman_spectra(x, y):
     layout = go.Layout(title="Raman Spectrum from Voigt Convolution",
@@ -83,11 +85,12 @@ structure_name = st.text_input("Search a compound: e.g. As2Se3")
 if structure_name:
     structures = fetch_data_from_mongo(structure_name)
     if len(structures) > 0:
-        names = [f"ICSD: {s[0].split('icsd')[-1]}" for s in structures]
+        names = [f"ICSD: {s.split('icsd')[-1]}" for s in structures.keys()]
         tabs = st.tabs(names)
-        for i in range(len(names)):
+        for i, data in enumerate(structures.values()):
             with tabs[i]:
-                show_structure(structures[i][2])
+                #show_structure(structures[i][2])
+                raman_intensities = data["raman_intensities"]
                 container = st.container()
                 col1, col2 = st.columns(2)
                 with col1:
@@ -95,14 +98,30 @@ if structure_name:
                 with col2:
                     gamma = st.slider("Gamma",help="Half-width at half-maximum of Cauchy distribution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma")
                 wavenumber_range = st.slider('Wavenumber range', 0.0, 1000.0, (25.0, 600.0),step=10.0,key=f"{names[i]}_range")
-                frequencies, convoluted_intensities = get_convoluted_spectra(structures[i][1],sigma,gamma,wavenumber_range)
+                frequencies, convoluted_intensities = get_convoluted_spectra(raman_intensities,sigma,gamma,wavenumber_range)
                 spectra_fig = plot_raman_spectra(frequencies, convoluted_intensities)
                 container.plotly_chart(spectra_fig)
                 st.subheader("Calculated values")
-                df = pd.DataFrame(structures[i][1].keys(), columns=["Wavenumber (cm-1)"],dtype=float)
+                modes = [x[0] for x in raman_intensities.values()]
+                df = pd.DataFrame(data=raman_intensities.keys(), index=modes,columns=["Wavenumber (cm-1)"],dtype=float)
                 df.insert(1,"THz", df["Wavenumber (cm-1)"]/0.3335641E+02)
-                df.insert(2,"Intensity (Arbitary Units)", [x[0] for x in structures[i][1].values()])
-                df.insert(3,"IRREP", [x[1] for x in structures[i][1].values()])
+                df.insert(2,"Intensity (Arbitary Units)", [x[1] for x in raman_intensities.values()])
+                df.insert(3,"IRREP", [x[2] for x in raman_intensities.values()])
+                df.index.name='Mode'
                 st.table(df)
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    raman_tens_button = st.button("See Raman Tensor", key=f"raman_tens_button{i}", help="3Nx6 Raman tensor (6 independent tensor components for each mode)")
+                with col2:
+                    born_charge_button = st.button("See Born Charge", key=f"born_charge_button{i}", help="Born charge trace for each atom")
+                data_container = st.empty()
+                if raman_tens_button:
+                    data_container.write(pd.DataFrame(data["raman_tensor"],columns=["XX","XY","XZ","YY","YZ","ZZ"]))
+                if born_charge_button:
+                    atoms = [x["Atomic symbol"] for x in data["born_charge"]]
+                    born_charge_trace = [x["Dynamic Charge"]/3 for x in data["born_charge"]]
+                    data_container.write(pd.DataFrame(data=born_charge_trace,index=atoms,columns=["Born Charge Trace"]))
+
     else:
         st.write("We don't have Raman spectra for this compound yet.")
