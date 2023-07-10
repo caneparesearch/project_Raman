@@ -4,6 +4,7 @@ from ast import literal_eval
 import json
 import sys
 import numpy as np
+import pandas as pd
 from pymatgen.core import Lattice, Structure
 import itertools
 import os
@@ -80,7 +81,7 @@ class crystalOut():
                 self.parsed_data["atom_lines"]["cryst_asymm_atom_lines"])
 
         self.atomic_masses = self.get_atomic_mass()
-        self.raman_intensities = self.get_raman_intensities()
+        self.raman_intensities = self.get_raman_IR_intensities()
         self.dielectric_tensor = self.get_dielectric_tensor()
         self.vib_contributions_dielectric_sum, self.vib_contributions_dielectric = self.get_vibrational_contributions()
         self.second_electric_susceptibility = self.get_second_electric_susceptibiliy()
@@ -200,7 +201,7 @@ class crystalOut():
                 all_coords.append(coords)
         return all_atoms, all_coords
 
-    def get_raman_intensities(self):
+    def get_raman_IR_intensities(self):
         """
         returns the intensities as a dict with format frequency: intensity
         only polycrystalline isotropic intensities (I_tot only) and the corresponding IRREP
@@ -208,31 +209,31 @@ class crystalOut():
         readUntil(self.file, " CONVERSION FACTORS FOR FREQUENCIES:")
         for _ in range(8):
             line = self.file.readline()
-        irrep_dict = {}
+        data = []
         while not line.isspace():
             line = line.replace("("," ")
             line = line.replace(")"," ")
             fields = line.split()
-            frequency = float(fields[3])
-            irrep = fields[5]
-            irrep_dict[frequency] = irrep
+            data.append(fields[1:])
             line = self.file.readline()
         
+        df = pd.DataFrame(data, columns=["Mode","EIGV(Ha**2)","FREQ(CM**-1)","FREQ(THZ)","IRREP","IR","INTENS","RAMAN"])
+        df.set_index("Mode", inplace=True)
+        df["RAMAN INTENSITIES"] = np.zeros(len(df))
+
         readUntil(self.file, "POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)")
         for i in range(4):
             line = self.file.readline()
 
-        raman_dict = {}
         while not line.isspace():
             fields = line.split()
-            frequency = float(fields[2])
             tot_intensity = float(fields[5])
-            mode = int(fields[1])
-            raman_dict[frequency] = [mode, tot_intensity, irrep_dict[frequency]]
+            mode = fields[1]
+            df.loc[mode, "RAMAN INTENSITIES"] = tot_intensity
             line = self.file.readline()
 
         self.file.seek(0)
-        return raman_dict
+        return df
 
     def get_atomic_mass(self):
         readUntil(self.file, "ATOMS ISOTOPIC MASS (AMU) FOR FREQUENCY CALCULATION")

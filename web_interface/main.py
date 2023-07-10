@@ -27,35 +27,36 @@ def fetch_data_from_mongo(structure_name):
     data = OrderedDict()
     for s in doc:
         name = s["structure_name"]
-        raman_intensities = json.loads(s["raman_intensities"])
+        raman_IR_intensities = pd.DataFrame.from_dict(json.loads(s["raman_IR_intensities"]))
         structure = Structure.from_dict(json.loads(s["structure"]))
         born_charge = json.loads(s["born_charge"])
         raman_tensor = pickle.loads(s["raman_tensor"])
-        data[name]={"raman_intensities":raman_intensities,"structure":structure,"born_charge":born_charge,"raman_tensor":raman_tensor}
+        data[name]={"raman_IR_intensities":raman_IR_intensities,"structure":structure,"born_charge":born_charge,"raman_tensor":raman_tensor}
     return data
 
-def get_convoluted_spectra(raman_intensities, sigma=1, gamma=1, wavenumber_range=(0,1000), resolution=1000):
-    data_freq = list(raman_intensities.keys())
-    data_int = [x[1] for x in raman_intensities.values()]
+def get_convoluted_spectra(intensities_df, raman=True, sigma=1, gamma=1, wavenumber_range=(0,1000), resolution=1000):
+    data_freq = intensities_df["FREQ(CM**-1)"].to_list()
+    if raman:
+        data_int = intensities_df["RAMAN INTENSITIES"].to_list()
+    else:
+        data_int = intensities_df["INTENS"].to_list()
 
     frequencies = np.linspace(wavenumber_range[0], wavenumber_range[1], resolution)
-    convoluted_intensities = np.zeros((resolution))
+    convoluted_intensities = np.zeros(resolution)
     for i in range(len(data_freq)):
         freq = float(data_freq[i])
         intensity = float(data_int[i])
-        convolution_single_peak = []
-        for x in frequencies:
-            convoluted_amplitude = voigt_profile(x - freq, sigma, gamma) * intensity
-            convolution_single_peak.append(convoluted_amplitude)
-        convoluted_intensities += np.array(convolution_single_peak)
+        convoluted_amplitude = voigt_profile(frequencies-freq, sigma, gamma) * intensity
+        #convolution_single_peak.append(convoluted_amplitude)
+        convoluted_intensities += convoluted_amplitude
 
     return frequencies, convoluted_intensities
 
 def show_structure(structure):
     pass
 
-def plot_raman_spectra(x, y):
-    layout = go.Layout(title="Raman Spectrum from Voigt Convolution",
+def plot_convoluted_spectra(x, y, raman=True):
+    layout = go.Layout(title="Raman Spectrum from Voigt Convolution" if raman else "IR Spectrum from Voigt Convolution",
                        xaxis=XAxis(title="Wavenumber (cm<sup>-1</sup>)"),
                        xaxis2 = XAxis(title="THz", overlaying= 'x', side= 'top'),)
 
@@ -90,25 +91,22 @@ if structure_name:
         for i, data in enumerate(structures.values()):
             with tabs[i]:
                 #show_structure(structures[i][2])
-                raman_intensities = data["raman_intensities"]
+                raman_IR_intensities = data["raman_IR_intensities"]
+                raman_intensities = raman_IR_intensities[raman_IR_intensities["RAMAN"] == "A"]
+                IR_intensities = raman_IR_intensities[raman_IR_intensities["IR"] == "A"]
                 container = st.container()
                 col1, col2 = st.columns(2)
                 with col1:
-                    sigma = st.slider("Sigma",help="Standard deviation of Gaussian convolution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_sigma")
+                    sigma = st.slider("Sigma",help="Standard deviation of Gaussian convolution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_sigma_raman")
                 with col2:
-                    gamma = st.slider("Gamma",help="Half-width at half-maximum of Cauchy distribution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma")
-                wavenumber_range = st.slider('Wavenumber range', 0.0, 1000.0, (25.0, 600.0),step=10.0,key=f"{names[i]}_range")
-                frequencies, convoluted_intensities = get_convoluted_spectra(raman_intensities,sigma,gamma,wavenumber_range)
-                spectra_fig = plot_raman_spectra(frequencies, convoluted_intensities)
+                    gamma = st.slider("Gamma",help="Half-width at half-maximum of Cauchy distribution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma_raman")
+                wavenumber_range = st.slider('Wavenumber range', 0.0, 1000.0, (20.0, 600.0),step=10.0,key=f"{names[i]}_range_raman")
+                frequencies, convoluted_intensities = get_convoluted_spectra(raman_intensities,raman=True,sigma=sigma,gamma=gamma,wavenumber_range=wavenumber_range)
+                spectra_fig = plot_convoluted_spectra(frequencies, convoluted_intensities)
                 container.plotly_chart(spectra_fig)
-                st.subheader("Calculated values")
-                modes = [x[0] for x in raman_intensities.values()]
-                df = pd.DataFrame(data=raman_intensities.keys(), index=modes,columns=["Wavenumber (cm-1)"],dtype=float)
-                df.insert(1,"THz", df["Wavenumber (cm-1)"]/0.3335641E+02)
-                df.insert(2,"Intensity (Arbitary Units)", [x[1] for x in raman_intensities.values()])
-                df.insert(3,"IRREP", [x[2] for x in raman_intensities.values()])
-                df.index.name='Mode'
-                st.table(df)
+                st.subheader("Calculated Raman values")
+                raman_intensities.drop(["EIGV(Ha**2)", "IR","RAMAN","INTENS"], axis="columns", inplace=True)
+                st.table(raman_intensities)
 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -122,6 +120,17 @@ if structure_name:
                     atoms = [x["Atomic symbol"] for x in data["born_charge"]]
                     born_charge_trace = [x["Dynamic Charge"]/3 for x in data["born_charge"]]
                     data_container.write(pd.DataFrame(data=born_charge_trace,index=atoms,columns=["Born Charge Trace"]))
+
+                container = st.container()
+                col1, col2 = st.columns(2)
+                with col1:
+                    sigma_IR = st.slider("Sigma",help="Standard deviation of Gaussian convolution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_sigma_IR")
+                with col2:
+                    gamma_IR = st.slider("Gamma",help="Half-width at half-maximum of Cauchy distribution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma_IR")
+                wavenumber_range_IR = st.slider('Wavenumber range', 0.0, 1000.0, (20.0, 600.0),step=10.0,key=f"{names[i]}_range_IR")
+                frequencies, convoluted_intensities = get_convoluted_spectra(IR_intensities,raman=False,sigma=sigma_IR,gamma=gamma_IR,wavenumber_range=wavenumber_range_IR)
+                spectra_fig = plot_convoluted_spectra(frequencies, convoluted_intensities,raman=False)
+                container.plotly_chart(spectra_fig)
 
     else:
         st.write("We don't have Raman spectra for this compound yet.")

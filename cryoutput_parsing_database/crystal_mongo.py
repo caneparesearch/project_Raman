@@ -44,7 +44,7 @@ def crystal_mongo_drone():
                     "third_electric_susceptibiliy":Binary(pickle.dumps(selected_structure.third_electric_susceptibiliy, protocol=2), subtype=128),
                     "born_charge":json.dumps(selected_structure.born_charge),
                     "born_charge_normal_mode":Binary(pickle.dumps(selected_structure.born_charge_normal_mode, protocol=2), subtype=128),
-                    "raman_intensities":json.dumps(selected_structure.raman_intensities),
+                    "raman_IR_intensities":json.dumps(selected_structure.raman_intensities.to_dict()),
                     "raman_temp": selected_structure.raman_temp,
                     "raman_wavelength": selected_structure.raman_wavelength,
                     "raman_tensor": Binary(pickle.dumps(tens_raman, protocol=2), subtype=128)}
@@ -79,30 +79,6 @@ def load_structure_from_mongo(structure_name):
         data.append([structure, space_group, thermodynamic_terms, raman_intensities, dielectric_tensor, vib_contributions_dielectric, second_electric_susceptibility, third_electric_susceptibiliy, born_charge, born_charge_normal_mode])
     
     return data
-
-def update_mongo():
-    """
-    not completed
-    """
-    uri = "mongodb+srv://RamanML:CaReRamanProject00@ramanml.utaye2e.mongodb.net/?retryWrites=true&w=majority"
-    mc = MongoClient(uri)
-    db = mc["raman_ml"]
-    structures = db.structures
-    all_crystal_outputs = glob.glob("cryoutput_parsing_database/crystal17_output_files/calc-*/*.out")
-    print("Found", len(all_crystal_outputs), "structures to be loaded into mongodb...")
-    for s in all_crystal_outputs:
-        name = s.split("calc-")[-1].split("_tzvp")[0]
-        print("Working on", name)
-        if name == "CoS2_205_icsd86351":
-            continue
-        try:
-            selected_structure = crystalOut(s)
-        except ValueError as e:
-            print(name, e)
-        myquery = { "structure_name": { "$regex": f"^{name}" } }
-        
-        structures.update_one(myquery, newvalues)
-
 
 if __name__ == '__main__':
     crystal_mongo_drone()
