@@ -92,6 +92,7 @@ if structure_name:
             with tabs[i]:
                 #show_structure(structures[i][2])
                 raman_IR_intensities = data["raman_IR_intensities"]
+                raman_IR_intensities.index.name='Mode'
                 raman_intensities = raman_IR_intensities[raman_IR_intensities["RAMAN"] == "A"]
                 IR_intensities = raman_IR_intensities[raman_IR_intensities["IR"] == "A"]
                 container = st.container()
@@ -104,9 +105,12 @@ if structure_name:
                 frequencies, convoluted_intensities = get_convoluted_spectra(raman_intensities,raman=True,sigma=sigma,gamma=gamma,wavenumber_range=wavenumber_range)
                 spectra_fig = plot_convoluted_spectra(frequencies, convoluted_intensities)
                 container.plotly_chart(spectra_fig)
-                st.subheader("Calculated Raman values")
+                st.subheader("Calculated Raman-active modes")
                 raman_intensities.drop(["EIGV(Ha**2)", "IR","RAMAN","INTENS"], axis="columns", inplace=True)
-                st.table(raman_intensities)
+                raman_intensities.columns.name = raman_intensities.index.name
+                raman_intensities.index.name = None
+                st.write(raman_intensities.to_html(), unsafe_allow_html=True)
+                st.write(" ")
 
                 col1, col2 = st.columns(2)
                 with col1:
