@@ -65,7 +65,7 @@ def show_structure(structure):
      height:'100%',
      color:'#E2F4F5',
      j2sPath:'https://chemapps.stolaf.edu/jmol/jsmol/j2s/',
-     serverURL:'http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php',
+     serverURL:'https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php',
      use:'html5'
     }}
     
