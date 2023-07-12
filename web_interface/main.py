@@ -8,6 +8,8 @@ from pymatgen.core.structure import Structure
 from plotly.graph_objs.layout import YAxis,XAxis,Margin
 import plotly.graph_objects as go
 from collections import OrderedDict
+import streamlit.components.v1 as components
+from pymatgen.io.cif import CifWriter
 
 st.set_page_config(page_title="Raman Database")
                    
@@ -53,7 +55,31 @@ def get_convoluted_spectra(intensities_df, raman=True, sigma=1, gamma=1, wavenum
     return frequencies, convoluted_intensities
 
 def show_structure(structure):
-    pass
+    html = f"""
+<script src="https://chemapps.stolaf.edu/jmol/jsmol/JSmol.min.js"></script>
+<head>
+    <script type="text/javascript">
+     var myJmol = 'myJmol';
+     var JmolInfo = {{
+     width:'100%',
+     height:'100%',
+     color:'#E2F4F5',
+     j2sPath:'https://chemapps.stolaf.edu/jmol/jsmol/j2s/',
+     serverURL:'http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php',
+     use:'html5'
+    }}
+    
+    $(document).ready(function(){{
+      $('#JmolDiv').html( Jmol.getAppletHtml(myJmol, JmolInfo) );
+      Jmol.script(myJmol, `load inline "${str(CifWriter(structure,symprec=0.1))}" {{1 1 1}} PACKED`); 
+    }});
+    </script>
+    </head>
+    <body>
+    <div id="JmolDiv" style="width:100vmin; height:100vmin;"></div>
+    </body>
+    """
+    return components.html(html, width=400, height=400)
 
 def plot_convoluted_spectra(x, y, raman=True):
     layout = go.Layout(title="Raman Spectrum from Voigt Convolution" if raman else "IR Spectrum from Voigt Convolution",
@@ -90,7 +116,7 @@ if structure_name:
         tabs = st.tabs(names)
         for i, data in enumerate(structures.values()):
             with tabs[i]:
-                #show_structure(structures[i][2])
+                show_structure(data["structure"])
                 raman_IR_intensities = data["raman_IR_intensities"]
                 raman_IR_intensities.index.name='Mode'
                 raman_intensities = raman_IR_intensities[raman_IR_intensities["RAMAN"] == "A"]
