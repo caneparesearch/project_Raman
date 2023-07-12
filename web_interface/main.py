@@ -132,7 +132,7 @@ if structure_name:
                 spectra_fig = plot_convoluted_spectra(frequencies, convoluted_intensities)
                 container.plotly_chart(spectra_fig)
                 st.subheader("Calculated Raman-active modes")
-                raman_intensities.drop(["EIGV(Ha**2)", "IR","RAMAN","INTENS"], axis="columns", inplace=True)
+                raman_intensities = raman_intensities.drop(["EIGV(Ha**2)", "IR","RAMAN","INTENS"], axis="columns")
                 raman_intensities.columns.name = raman_intensities.index.name
                 raman_intensities.index.name = None
                 st.write(raman_intensities.to_html(), unsafe_allow_html=True)
