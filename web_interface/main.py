@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 from collections import OrderedDict
 import streamlit.components.v1 as components
 from pymatgen.io.cif import CifWriter
+import re
 
 st.set_page_config(page_title="Raman Database")
                    
@@ -24,7 +25,8 @@ client = init_connection()
 def fetch_data_from_mongo(structure_name):
     db = client["raman_ml"]
     structures = db.structures
-    myquery = { "structure_name": { "$regex": f"^{structure_name}_" } }
+    escaped_structure_name = re.escape(structure_name)
+    myquery = { "structure_name": { "$regex": f"^{escaped_structure_name}" } }
     doc = structures.find(myquery)
     data = OrderedDict()
     for s in doc:
