@@ -26,7 +26,7 @@ def fetch_data_from_mongo(structure_name):
     db = client["raman_ml"]
     structures = db.structures
     escaped_structure_name = re.escape(structure_name)
-    myquery = { "structure_name": { "$regex": f"^{escaped_structure_name}$" } }
+    myquery = { "structure_name": { "$regex": f'^{escaped_structure_name}_' } }
     doc = structures.find(myquery)
     data = OrderedDict()
     for s in doc:
