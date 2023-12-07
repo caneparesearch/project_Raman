@@ -1,0 +1,103 @@
+
+ CONVERSION FACTORS FOR FREQUENCIES:
+      1 CM**(-1) =   0.4556335E-05 HARTREE
+      1 THZ      =   0.3335641E+02 CM**(-1)
+
+ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+    MODES         EIGV          FREQUENCIES     IRREP  IR   INTENS    RAMAN
+             (HARTREE**2)   (CM**-1)     (THZ)             (KM/MOL)
+    1-   3    0.2273E-17      0.0000    0.0000  (F1u)   A (     0.00)   I
+    4-   6    0.1109E-06     73.0833    2.1910  (F2u)   I (     0.00)   I
+    7-   9    0.1242E-06     77.3318    2.3184  (F2g)   I (     0.00)   A
+   10-  12    0.1341E-06     80.3592    2.4091  (F1g)   I (     0.00)   I
+   13-  14    0.7139E-06    185.4344    5.5592  (Eg )   I (     0.00)   A
+   15-  16    0.7941E-06    195.5774    5.8633  (Eu )   I (     0.00)   I
+   17-  19    0.8997E-06    208.1783    6.2410  (F1g)   I (     0.00)   I
+   20-  22    0.1380E-05    257.8139    7.7291  (F1u)   A (   232.55)   I
+   23-  25    0.1503E-05    269.1121    8.0678  (F2g)   I (     0.00)   A
+   26-  28    0.1525E-05    270.9947    8.1242  (F2u)   I (     0.00)   I
+   29-  31    0.2488E-05    346.1692   10.3779  (F1u)   A (  1356.13)   I
+   32-  32    0.3075E-05    384.8924   11.5388  (A1g)   I (     0.00)   A
+   33-  33    0.3330E-05    400.5019   12.0067  (A2u)   I (     0.00)   I
+   34-  36    0.3619E-05    417.5181   12.5169  (F2g)   I (     0.00)   A
+   37-  38    0.4242E-05    452.0269   13.5514  (Eg )   I (     0.00)   A
+   39-  41    0.4847E-05    483.2073   14.4862  (F2g)   I (     0.00)   A
+   42-  43    0.4861E-05    483.8838   14.5065  (Eu )   I (     0.00)   I
+   44-  46    0.4989E-05    490.2272   14.6966  (F1u)   A (   622.32)   I
+   47-  47    0.6741E-05    569.8164   17.0827  (A2u)   I (     0.00)   I
+   48-  48    0.6852E-05    574.5040   17.2232  (A1g)   I (     0.00)   A
+   49-  51    0.7432E-05    598.3305   17.9375  (F1g)   I (     0.00)   I
+   52-  54    0.7698E-05    608.9431   18.2557  (F2u)   I (     0.00)   I
+   55-  57    0.1363E-04    810.1594   24.2880  (F2g)   I (     0.00)   A
+   58-  60    0.1425E-04    828.5413   24.8390  (F1u)   A (  4558.00)   I
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+ RAMAN INTENSITIES UNDER PLACZECK APPROXIMATION ARE COMPUTED AS:
+
+  DIRECTIONAL (SINGLE CRYSTAL) :
+
+     I_ij(n)= VOLUME*X(n,i,j)**2
+
+  ISOTROPIC (POLYCRYSTALLINE POWDERS, GASES) :
+
+     G_0(n) = 1/3*(SUM_i X(n,i,i))**2
+     G_1(n) = 1/2*SUM_i,j (X(n,i,j)+X(n,j,i))**2
+     G_2(n) = 1/3*SUM_i,j (X(n,i,i)-X(n,j,j))**2
+
+     I_par(n)  = VOLUME*( 15*G_0(n) + 6*(G_1(n) + G_2(n)) )
+     I_perp(n) = VOLUME*9/2*( G_1(n) + G_2(n) )
+     I_tot(n)  = I_par(n) + I_perp(n)
+
+  WHERE X(n,i,j) IS THE i,j-th COMPONENT OF THE RAMAN TENSOR
+  IN THE BASIS OF NORMAL MODE n
+
+  ALL VALUES ARE NORMALIZED TO THE MOST INTENSE PEAK
+
+
+  INTENSITIES HAVE BEEN CALCULATED AT 
+  TEMPERATURE                  :    298.0 K
+  FREQUENCY OF INCOMING LASER  :    514.0 NM
+
+
+ REFERENCES TO BE QUOTED FOR RAMAN INTENSITIES:
+
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164101 (2013)
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164102 (2013)
+
+  --
+  POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES           I_tot     I_par    I_perp
+  ----------------------------------------------------------------
+    7-   9       77.3318 (F2g)   1000.00    571.43    428.57
+   13-  14      185.4344 (Eg )     73.70     42.11     31.58
+   23-  25      269.1121 (F2g)    329.63    188.36    141.27
+   32-  32      384.8924 (A1g)    557.46    557.46      0.00
+   34-  36      417.5181 (F2g)      0.00      0.00      0.00
+   37-  38      452.0269 (Eg )      0.49      0.28      0.21
+   39-  41      483.2073 (F2g)     28.12     16.07     12.05
+   48-  48      574.5040 (A1g)    132.29    132.29      0.00
+   55-  57      810.1594 (F2g)     38.33     21.90     16.43
+
+  --
+  SINGLE CRYSTAL DIRECTIONAL INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES          I_xx    I_xy    I_xz    I_yy    I_yz    I_zz
+  ----------------------------------------------------------------------------
+    7-   9       77.3318 (F2g)    0.00 1000.00 1000.00    0.00 1000.00    0.00
+   13-  14      185.4344 (Eg )  147.39    0.00    0.00  147.39    0.00  147.39
+   23-  25      269.1121 (F2g)    0.00  329.63  329.63    0.00  329.63    0.00
+   32-  32      384.8924 (A1g)  780.45    0.00    0.00  780.45    0.00  780.45
+   34-  36      417.5181 (F2g)    0.00    0.00    0.00    0.00    0.00    0.00
+   37-  38      452.0269 (Eg )    0.99    0.00    0.00    0.99    0.00    0.99
+   39-  41      483.2073 (F2g)    0.00   28.12   28.12    0.00   28.12    0.00
+   48-  48      574.5040 (A1g)  185.20    0.00    0.00  185.20    0.00  185.20
+   55-  57      810.1594 (F2g)    0.00   38.33   38.33    0.00   38.33    0.00
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+

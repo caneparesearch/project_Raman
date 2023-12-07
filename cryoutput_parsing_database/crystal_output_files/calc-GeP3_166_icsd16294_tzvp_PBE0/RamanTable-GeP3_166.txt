@@ -1,0 +1,91 @@
+
+ CONVERSION FACTORS FOR FREQUENCIES:
+      1 CM**(-1) =   0.4556335E-05 HARTREE
+      1 THZ      =   0.3335641E+02 CM**(-1)
+
+ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+    MODES         EIGV          FREQUENCIES     IRREP  IR   INTENS    RAMAN
+             (HARTREE**2)   (CM**-1)     (THZ)             (KM/MOL)
+    1-   2    0.5948E-22      0.0000    0.0000  (Eu )   A (195951.77)   I
+    3-   3    0.1784E-21      0.0000    0.0000  (A2u)   A ( 99228.91)   I
+    4-   5    0.2867E-06    117.5206    3.5232  (Eg )   I (     0.00)   A
+    6-   6    0.3038E-06    120.9772    3.6268  (A1g)   I (     0.00)   A
+    7-   7    0.5354E-06    160.5929    4.8145  (A2u)   A ( 21156.36)   I
+    8-   8    0.5553E-06    163.5467    4.9030  (A2g)   I (     0.00)   I
+    9-  10    0.5890E-06    168.4377    5.0496  (Eg )   I (     0.00)   A
+   11-  12    0.7942E-06    195.5900    5.8636  (Eu )   A ( 80126.04)   I
+   13-  14    0.1628E-05    280.0705    8.3963  (Eg )   I (     0.00)   A
+   15-  16    0.1853E-05    298.7993    8.9578  (Eu )   A (*********)   I
+   17-  17    0.2537E-05    349.5639   10.4797  (A1g)   I (     0.00)   A
+   18-  18    0.2947E-05    376.7428   11.2945  (A2u)   A (355608.64)   I
+   19-  19    0.3787E-05    427.1284   12.8050  (A1u)   I (     0.00)   I
+   20-  21    0.4159E-05    447.5982   13.4187  (Eg )   I (     0.00)   A
+   22-  23    0.4218E-05    450.7446   13.5130  (Eu )   A ( 88573.29)   I
+   24-  24    0.4351E-05    457.8139   13.7249  (A1g)   I (     0.00)   A
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+ RAMAN INTENSITIES UNDER PLACZECK APPROXIMATION ARE COMPUTED AS:
+
+  DIRECTIONAL (SINGLE CRYSTAL) :
+
+     I_ij(n)= VOLUME*X(n,i,j)**2
+
+  ISOTROPIC (POLYCRYSTALLINE POWDERS, GASES) :
+
+     G_0(n) = 1/3*(SUM_i X(n,i,i))**2
+     G_1(n) = 1/2*SUM_i,j (X(n,i,j)+X(n,j,i))**2
+     G_2(n) = 1/3*SUM_i,j (X(n,i,i)-X(n,j,j))**2
+
+     I_par(n)  = VOLUME*( 15*G_0(n) + 6*(G_1(n) + G_2(n)) )
+     I_perp(n) = VOLUME*9/2*( G_1(n) + G_2(n) )
+     I_tot(n)  = I_par(n) + I_perp(n)
+
+  WHERE X(n,i,j) IS THE i,j-th COMPONENT OF THE RAMAN TENSOR
+  IN THE BASIS OF NORMAL MODE n
+
+  ALL VALUES ARE NORMALIZED TO THE MOST INTENSE PEAK
+
+
+  INTENSITIES HAVE BEEN CALCULATED AT 
+  TEMPERATURE                  :    298.0 K
+  FREQUENCY OF INCOMING LASER  :    514.0 NM
+
+
+ REFERENCES TO BE QUOTED FOR RAMAN INTENSITIES:
+
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164101 (2013)
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164102 (2013)
+
+  --
+  POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES           I_tot     I_par    I_perp
+  ----------------------------------------------------------------
+    4-   5      117.5206 (Eg )      1.45      0.83      0.62
+    6-   6      120.9772 (A1g)      0.00      0.00      0.00
+    9-  10      168.4377 (Eg )      6.32      3.61      2.71
+   13-  14      280.0705 (Eg )    794.91    454.23    340.67
+   17-  17      349.5639 (A1g)      0.00      0.00      0.00
+   20-  21      447.5982 (Eg )   1000.00    571.43    428.57
+   24-  24      457.8139 (A1g)      0.00      0.00      0.00
+
+  --
+  SINGLE CRYSTAL DIRECTIONAL INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES          I_xx    I_xy    I_xz    I_yy    I_yz    I_zz
+  ----------------------------------------------------------------------------
+    4-   5      117.5206 (Eg )    0.00    1.48    0.00    0.00    0.08    0.00
+    6-   6      120.9772 (A1g)    0.00    0.00    0.00    0.00    0.00    0.00
+    9-  10      168.4377 (Eg )    0.00    6.38    0.00    0.00    0.45    0.00
+   13-  14      280.0705 (Eg )    0.00  796.86    0.00    0.00   61.07    0.00
+   17-  17      349.5639 (A1g)    0.00    0.00    0.00    0.00    0.00    0.00
+   20-  21      447.5982 (Eg )    0.00 1000.00    0.00    0.00   79.28    0.00
+   24-  24      457.8139 (A1g)    0.00    0.00    0.00    0.00    0.00    0.00
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+

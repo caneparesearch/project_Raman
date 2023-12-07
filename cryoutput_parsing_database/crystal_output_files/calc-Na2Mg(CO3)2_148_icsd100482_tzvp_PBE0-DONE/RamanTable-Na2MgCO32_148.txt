@@ -1,0 +1,103 @@
+
+ CONVERSION FACTORS FOR FREQUENCIES:
+      1 CM**(-1) =   0.4556335E-05 HARTREE
+      1 THZ      =   0.3335641E+02 CM**(-1)
+
+ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+    MODES         EIGV          FREQUENCIES     IRREP  IR   INTENS    RAMAN
+             (HARTREE**2)   (CM**-1)     (THZ)             (KM/MOL)
+    1-   1    0.3134E-19      0.0000    0.0000  (Au )   A (     0.00)   I
+    2-   3    0.3665E-17      0.0000    0.0000  (Eu )   A (     0.00)   I
+    4-   5    0.1947E-06     96.8439    2.9033  (Eg )   I (     0.00)   A
+    6-   6    0.2681E-06    113.6417    3.4069  (Ag )   I (     0.00)   A
+    7-   7    0.3053E-06    121.2753    3.6357  (Au )   A (   185.09)   I
+    8-   9    0.7590E-06    191.2115    5.7324  (Eu )   A (   260.04)   I
+   10-  10    0.7770E-06    193.4583    5.7997  (Ag )   I (     0.00)   A
+   11-  12    0.9178E-06    210.2558    6.3033  (Eg )   I (     0.00)   A
+   13-  14    0.1272E-05    247.5657    7.4218  (Eu )   A (   106.26)   I
+   15-  15    0.1332E-05    253.3175    7.5943  (Au )   A (    41.66)   I
+   16-  17    0.1510E-05    269.6913    8.0851  (Eg )   I (     0.00)   A
+   18-  18    0.2009E-05    311.0557    9.3252  (Ag )   I (     0.00)   A
+   19-  20    0.2516E-05    348.1411   10.4370  (Eu )   A (   939.03)   I
+   21-  21    0.3148E-05    389.4229   11.6746  (Au )   A (   165.33)   I
+   22-  23    0.1038E-04    707.1853   21.2009  (Eg )   I (     0.00)   A
+   24-  25    0.1048E-04    710.3487   21.2957  (Eu )   A (     6.72)   I
+   26-  26    0.1580E-04    872.3688   26.1530  (Au )   A (   188.69)   I
+   27-  27    0.1703E-04    905.6864   27.1518  (Ag )   I (     0.00)   A
+   28-  28    0.2609E-04   1120.9721   33.6059  (Au )   A (     6.29)   I
+   29-  29    0.2615E-04   1122.2773   33.6450  (Ag )   I (     0.00)   A
+   30-  31    0.4444E-04   1463.0571   43.8613  (Eg )   I (     0.00)   A
+   32-  33    0.4637E-04   1494.5496   44.8055  (Eu )   A (  4814.36)   I
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+ RAMAN INTENSITIES UNDER PLACZECK APPROXIMATION ARE COMPUTED AS:
+
+  DIRECTIONAL (SINGLE CRYSTAL) :
+
+     I_ij(n)= VOLUME*X(n,i,j)**2
+
+  ISOTROPIC (POLYCRYSTALLINE POWDERS, GASES) :
+
+     G_0(n) = 1/3*(SUM_i X(n,i,i))**2
+     G_1(n) = 1/2*SUM_i,j (X(n,i,j)+X(n,j,i))**2
+     G_2(n) = 1/3*SUM_i,j (X(n,i,i)-X(n,j,j))**2
+
+     I_par(n)  = VOLUME*( 15*G_0(n) + 6*(G_1(n) + G_2(n)) )
+     I_perp(n) = VOLUME*9/2*( G_1(n) + G_2(n) )
+     I_tot(n)  = I_par(n) + I_perp(n)
+
+  WHERE X(n,i,j) IS THE i,j-th COMPONENT OF THE RAMAN TENSOR
+  IN THE BASIS OF NORMAL MODE n
+
+  ALL VALUES ARE NORMALIZED TO THE MOST INTENSE PEAK
+
+
+  INTENSITIES HAVE BEEN CALCULATED AT 
+  TEMPERATURE                  :    298.0 K
+  FREQUENCY OF INCOMING LASER  :    514.0 NM
+
+
+ REFERENCES TO BE QUOTED FOR RAMAN INTENSITIES:
+
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164101 (2013)
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164102 (2013)
+
+  --
+  POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES           I_tot     I_par    I_perp
+  ----------------------------------------------------------------
+    4-   5       96.8439 (Eg )   1000.00    571.43    428.57
+    6-   6      113.6417 (Ag )     18.84     18.58      0.26
+   10-  10      193.4583 (Ag )      0.93      0.91      0.02
+   11-  12      210.2558 (Eg )    191.38    109.36     82.02
+   16-  17      269.6913 (Eg )    165.94     94.82     71.12
+   18-  18      311.0557 (Ag )     16.65     15.83      0.82
+   22-  23      707.1853 (Eg )     59.18     33.82     25.36
+   27-  27      905.6864 (Ag )      4.11      2.56      1.55
+   29-  29     1122.2773 (Ag )    565.99    541.90     24.09
+   30-  31     1463.0571 (Eg )     25.37     14.49     10.87
+
+  --
+  SINGLE CRYSTAL DIRECTIONAL INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES          I_xx    I_xy    I_xz    I_yy    I_yz    I_zz
+  ----------------------------------------------------------------------------
+    4-   5       96.8439 (Eg )  141.81  141.81 1000.00  141.81  999.99    0.00
+    6-   6      113.6417 (Ag )   25.86    0.00    0.00   25.86    0.00    9.34
+   10-  10      193.4583 (Ag )    1.32    0.00    0.00    1.32    0.00    0.39
+   11-  12      210.2558 (Eg )    1.50    1.50  217.02    1.50  217.02    0.00
+   16-  17      269.6913 (Eg )    0.42    0.42  189.05    0.42  189.05    0.00
+   18-  18      311.0557 (Ag )    7.61    0.00    0.00    7.61    0.00   40.63
+   22-  23      707.1853 (Eg )   67.12   67.12    0.45   67.12    0.45    0.00
+   27-  27      905.6864 (Ag )    0.87    0.00    0.00    0.87    0.00   16.35
+   29-  29     1122.2773 (Ag )  890.97    0.00    0.00  890.97    0.00  104.57
+   30-  31     1463.0571 (Eg )   27.35   27.36    1.61   27.36    1.61    0.00
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+

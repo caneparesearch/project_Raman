@@ -1,0 +1,88 @@
+
+ CONVERSION FACTORS FOR FREQUENCIES:
+      1 CM**(-1) =   0.4556335E-05 HARTREE
+      1 THZ      =   0.3335641E+02 CM**(-1)
+
+ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+    MODES         EIGV          FREQUENCIES     IRREP  IR   INTENS    RAMAN
+             (HARTREE**2)   (CM**-1)     (THZ)             (KM/MOL)
+    1-   3   -0.1190E-21      0.0000    0.0000  (F1u)   A (     0.00)   I
+    4-   6    0.8925E-06    207.3441    6.2160  (F2g)   I (     0.00)   A
+    7-   9    0.1164E-05    236.8274    7.0999  (F1u)   A (   265.55)   I
+   10-  12    0.1429E-05    262.3926    7.8663  (F2u)   I (     0.00)   I
+   13-  15    0.2782E-05    366.0971   10.9753  (F1g)   I (     0.00)   I
+   16-  17    0.3434E-05    406.6827   12.1920  (Eu )   I (     0.00)   I
+   18-  19    0.3862E-05    431.3082   12.9303  (Eg )   I (     0.00)   A
+   20-  22    0.4777E-05    479.6668   14.3800  (F2u)   I (     0.00)   I
+   23-  25    0.5129E-05    497.0373   14.9008  (F1u)   A (  6187.36)   I
+   26-  28    0.5773E-05    527.3450   15.8094  (F2g)   I (     0.00)   A
+   29-  31    0.6645E-05    565.7474   16.9607  (F1u)   A (  1277.11)   I
+   32-  33    0.7914E-05    617.4151   18.5096  (Eu )   I (     0.00)   I
+   34-  36    0.9527E-05    677.4425   20.3092  (F2g)   I (     0.00)   A
+   37-  39    0.9678E-05    682.7855   20.4694  (F1u)   A (  2095.04)   I
+   40-  40    0.9772E-05    686.0982   20.5687  (A2u)   I (     0.00)   I
+   41-  41    0.1305E-04    792.9853   23.7731  (A2u)   I (     0.00)   I
+   42-  42    0.1343E-04    804.2167   24.1098  (A1g)   I (     0.00)   A
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+ RAMAN INTENSITIES UNDER PLACZECK APPROXIMATION ARE COMPUTED AS:
+
+  DIRECTIONAL (SINGLE CRYSTAL) :
+
+     I_ij(n)= VOLUME*X(n,i,j)**2
+
+  ISOTROPIC (POLYCRYSTALLINE POWDERS, GASES) :
+
+     G_0(n) = 1/3*(SUM_i X(n,i,i))**2
+     G_1(n) = 1/2*SUM_i,j (X(n,i,j)+X(n,j,i))**2
+     G_2(n) = 1/3*SUM_i,j (X(n,i,i)-X(n,j,j))**2
+
+     I_par(n)  = VOLUME*( 15*G_0(n) + 6*(G_1(n) + G_2(n)) )
+     I_perp(n) = VOLUME*9/2*( G_1(n) + G_2(n) )
+     I_tot(n)  = I_par(n) + I_perp(n)
+
+  WHERE X(n,i,j) IS THE i,j-th COMPONENT OF THE RAMAN TENSOR
+  IN THE BASIS OF NORMAL MODE n
+
+  ALL VALUES ARE NORMALIZED TO THE MOST INTENSE PEAK
+
+
+  INTENSITIES HAVE BEEN CALCULATED AT 
+  TEMPERATURE                  :    298.0 K
+  FREQUENCY OF INCOMING LASER  :    514.0 NM
+
+
+ REFERENCES TO BE QUOTED FOR RAMAN INTENSITIES:
+
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164101 (2013)
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164102 (2013)
+
+  --
+  POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES           I_tot     I_par    I_perp
+  ----------------------------------------------------------------
+    4-   6      207.3441 (F2g)      0.03      0.02      0.01
+   18-  19      431.3082 (Eg )    758.36    433.35    325.01
+   26-  28      527.3450 (F2g)     31.24     17.85     13.39
+   34-  36      677.4425 (F2g)   1000.00    571.43    428.57
+   42-  42      804.2167 (A1g)      0.98      0.98      0.00
+
+  --
+  SINGLE CRYSTAL DIRECTIONAL INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES          I_xx    I_xy    I_xz    I_yy    I_yz    I_zz
+  ----------------------------------------------------------------------------
+    4-   6      207.3441 (F2g)    0.00    0.02    0.02    0.00    0.02    0.00
+   18-  19      431.3082 (Eg )  999.99    0.00    0.00  999.99    0.00 1000.00
+   26-  28      527.3450 (F2g)    0.00   20.60   20.60    0.00   20.60    0.00
+   34-  36      677.4425 (F2g)    0.00  659.31  659.31    0.00  659.31    0.00
+   42-  42      804.2167 (A1g)    0.90    0.00    0.00    0.90    0.00    0.90
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+

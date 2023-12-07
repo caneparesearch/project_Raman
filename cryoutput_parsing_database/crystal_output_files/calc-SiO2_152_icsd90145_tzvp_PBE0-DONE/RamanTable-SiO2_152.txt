@@ -1,0 +1,103 @@
+
+ CONVERSION FACTORS FOR FREQUENCIES:
+      1 CM**(-1) =   0.4556335E-05 HARTREE
+      1 THZ      =   0.3335641E+02 CM**(-1)
+
+ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+    MODES         EIGV          FREQUENCIES     IRREP  IR   INTENS    RAMAN
+             (HARTREE**2)   (CM**-1)     (THZ)             (KM/MOL)
+    1-   1   -0.1903E-20      0.0000    0.0000  (A2 )   A (     0.00)   I
+    2-   3    0.2584E-19      0.0000    0.0000  (E  )   A (     0.00)   A
+    4-   5    0.3322E-06    126.4930    3.7922  (E  )   A (     0.24)   A
+    6-   6    0.9587E-06    214.8894    6.4422  (A1 )   I (     0.00)   A
+    7-   8    0.1337E-05    253.8041    7.6089  (E  )   A (    21.24)   A
+    9-   9    0.2307E-05    333.3714    9.9942  (A1 )   I (     0.00)   A
+   10-  10    0.2387E-05    339.1080   10.1662  (A2 )   A (   234.56)   I
+   11-  12    0.2873E-05    371.9821   11.1517  (E  )   A (   311.64)   A
+   13-  14    0.3805E-05    428.1220   12.8348  (E  )   A (   693.15)   A
+   15-  15    0.4222E-05    450.9900   13.5203  (A1 )   I (     0.00)   A
+   16-  16    0.4738E-05    477.7242   14.3218  (A2 )   A (   360.86)   I
+   17-  18    0.9784E-05    686.5129   20.5811  (E  )   A (    59.46)   A
+   19-  19    0.1220E-04    766.5124   22.9795  (A2 )   A (   181.52)   I
+   20-  21    0.1288E-04    787.5297   23.6095  (E  )   A (   298.09)   A
+   22-  23    0.2393E-04   1073.5398   32.1839  (E  )   A (  3476.70)   A
+   24-  24    0.2432E-04   1082.3460   32.4479  (A2 )   A (  1822.12)   I
+   25-  25    0.2476E-04   1092.0939   32.7402  (A1 )   I (     0.00)   A
+   26-  27    0.2787E-04   1158.6036   34.7341  (E  )   A (    56.39)   A
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+ RAMAN INTENSITIES UNDER PLACZECK APPROXIMATION ARE COMPUTED AS:
+
+  DIRECTIONAL (SINGLE CRYSTAL) :
+
+     I_ij(n)= VOLUME*X(n,i,j)**2
+
+  ISOTROPIC (POLYCRYSTALLINE POWDERS, GASES) :
+
+     G_0(n) = 1/3*(SUM_i X(n,i,i))**2
+     G_1(n) = 1/2*SUM_i,j (X(n,i,j)+X(n,j,i))**2
+     G_2(n) = 1/3*SUM_i,j (X(n,i,i)-X(n,j,j))**2
+
+     I_par(n)  = VOLUME*( 15*G_0(n) + 6*(G_1(n) + G_2(n)) )
+     I_perp(n) = VOLUME*9/2*( G_1(n) + G_2(n) )
+     I_tot(n)  = I_par(n) + I_perp(n)
+
+  WHERE X(n,i,j) IS THE i,j-th COMPONENT OF THE RAMAN TENSOR
+  IN THE BASIS OF NORMAL MODE n
+
+  ALL VALUES ARE NORMALIZED TO THE MOST INTENSE PEAK
+
+
+  INTENSITIES HAVE BEEN CALCULATED AT 
+  TEMPERATURE                  :    298.0 K
+  FREQUENCY OF INCOMING LASER  :    514.0 NM
+
+
+ REFERENCES TO BE QUOTED FOR RAMAN INTENSITIES:
+
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164101 (2013)
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164102 (2013)
+
+  --
+  POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES           I_tot     I_par    I_perp
+  ----------------------------------------------------------------
+    4-   5      126.4930 (E  )    243.29    139.02    104.27
+    6-   6      214.8894 (A1 )    502.96    502.04      0.93
+    7-   8      253.8041 (E  )     32.94     18.83     14.12
+    9-   9      333.3714 (A1 )     60.60     39.84     20.76
+   11-  12      371.9821 (E  )     35.39     20.22     15.17
+   13-  14      428.1220 (E  )     44.42     25.38     19.04
+   15-  15      450.9900 (A1 )   1000.00    999.83      0.17
+   17-  18      686.5129 (E  )     20.96     11.98      8.98
+   20-  21      787.5297 (E  )     34.09     19.48     14.61
+   22-  23     1073.5398 (E  )     13.87      7.93      5.95
+   25-  25     1092.0939 (A1 )     10.77      6.26      4.51
+   26-  27     1158.6036 (E  )     35.32     20.18     15.14
+
+  --
+  SINGLE CRYSTAL DIRECTIONAL INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES          I_xx    I_xy    I_xz    I_yy    I_yz    I_zz
+  ----------------------------------------------------------------------------
+    4-   5      126.4930 (E  )  170.29  170.29   73.89  170.29   73.89    0.00
+    6-   6      214.8894 (A1 )  418.47    0.00    0.00  418.47    0.00  579.10
+    7-   8      253.8041 (E  )    2.94    2.94   30.12    2.94   30.12    0.00
+    9-   9      333.3714 (A1 )   82.23    0.00    0.00   82.23    0.00   64.19
+   11-  12      371.9821 (E  )   33.33   33.33    2.18   33.33    2.18    0.00
+   13-  14      428.1220 (E  )    2.22    2.22   42.36    2.22   42.36    0.00
+   15-  15      450.9900 (A1 )  905.35    0.00    0.00  905.34    0.00 1000.00
+   17-  18      686.5129 (E  )   12.29   12.29    8.75   12.29    8.75    0.00
+   20-  21      787.5297 (E  )    3.44    3.44   30.78    3.44   30.78    0.00
+   22-  23     1073.5398 (E  )    1.93    1.93   11.99    1.93   11.99    0.00
+   25-  25     1092.0939 (A1 )    4.76    0.00    0.00    4.76    0.00   33.43
+   26-  27     1158.6036 (E  )   29.48   29.48    5.96   29.48    5.96    0.00
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+
