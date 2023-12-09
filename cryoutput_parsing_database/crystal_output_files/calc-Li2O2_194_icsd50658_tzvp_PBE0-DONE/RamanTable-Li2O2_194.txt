@@ -1,0 +1,87 @@
+
+ CONVERSION FACTORS FOR FREQUENCIES:
+      1 CM**(-1) =   0.4556335E-05 HARTREE
+      1 THZ      =   0.3335641E+02 CM**(-1)
+
+ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+    MODES         EIGV          FREQUENCIES     IRREP  IR   INTENS    RAMAN
+             (HARTREE**2)   (CM**-1)     (THZ)             (KM/MOL)
+    1-   2   -0.5435E-06   -161.8010   -4.8507  (E1g)   I (     0.00)   A
+    3-   4   -0.4845E-06   -152.7752   -4.5801  (E2u)   I (     0.00)   I
+    5-   5    0.4522E-22      0.0000    0.0000  (A2u)   A (     0.00)   I
+    6-   7    0.1069E-21      0.0000    0.0000  (E1u)   A (     0.00)   I
+    8-   8    0.1112E-06     73.1783    2.1938  (A2u)   A (  1208.73)   I
+    9-  10    0.4026E-06    139.2666    4.1751  (E2g)   I (     0.00)   A
+   11-  11    0.1407E-05    260.2946    7.8034  (B1g)   I (     0.00)   I
+   12-  12    0.2698E-05    360.5261   10.8083  (B1g)   I (     0.00)   I
+   13-  14    0.4081E-05    443.3871   13.2924  (E2u)   I (     0.00)   I
+   15-  16    0.4847E-05    483.1712   14.4851  (E1u)   A (  1328.54)   I
+   17-  18    0.5274E-05    504.0304   15.1105  (E1g)   I (     0.00)   A
+   19-  20    0.5491E-05    514.2716   15.4175  (E2g)   I (     0.00)   A
+   21-  21    0.5616E-05    520.0969   15.5921  (A1g)   I (     0.00)   A
+   22-  22    0.7080E-05    583.9700   17.5070  (B2u)   I (     0.00)   I
+   23-  23    0.1866E-04    948.0876   28.4230  (B2u)   I (     0.00)   I
+   24-  24    0.1891E-04    954.3318   28.6101  (A1g)   I (     0.00)   A
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+ RAMAN INTENSITIES UNDER PLACZECK APPROXIMATION ARE COMPUTED AS:
+
+  DIRECTIONAL (SINGLE CRYSTAL) :
+
+     I_ij(n)= VOLUME*X(n,i,j)**2
+
+  ISOTROPIC (POLYCRYSTALLINE POWDERS, GASES) :
+
+     G_0(n) = 1/3*(SUM_i X(n,i,i))**2
+     G_1(n) = 1/2*SUM_i,j (X(n,i,j)+X(n,j,i))**2
+     G_2(n) = 1/3*SUM_i,j (X(n,i,i)-X(n,j,j))**2
+
+     I_par(n)  = VOLUME*( 15*G_0(n) + 6*(G_1(n) + G_2(n)) )
+     I_perp(n) = VOLUME*9/2*( G_1(n) + G_2(n) )
+     I_tot(n)  = I_par(n) + I_perp(n)
+
+  WHERE X(n,i,j) IS THE i,j-th COMPONENT OF THE RAMAN TENSOR
+  IN THE BASIS OF NORMAL MODE n
+
+  ALL VALUES ARE NORMALIZED TO THE MOST INTENSE PEAK
+
+
+  INTENSITIES HAVE BEEN CALCULATED AT 
+  TEMPERATURE                  :    298.0 K
+  FREQUENCY OF INCOMING LASER  :    514.0 NM
+
+
+ REFERENCES TO BE QUOTED FOR RAMAN INTENSITIES:
+
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164101 (2013)
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164102 (2013)
+
+  --
+  POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES           I_tot     I_par    I_perp
+  ----------------------------------------------------------------
+    9-  10      139.2666 (E2g)      0.08      0.05      0.03
+   17-  18      504.0304 (E1g)      0.81      0.46      0.35
+   19-  20      514.2716 (E2g)     72.19     41.25     30.94
+   21-  21      520.0969 (A1g)      3.58      2.87      0.71
+   24-  24      954.3318 (A1g)   1000.00    768.42    231.58
+
+  --
+  SINGLE CRYSTAL DIRECTIONAL INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES          I_xx    I_xy    I_xz    I_yy    I_yz    I_zz
+  ----------------------------------------------------------------------------
+    9-  10      139.2666 (E2g)    0.02    0.02    0.00    0.02    0.00    0.00
+   17-  18      504.0304 (E1g)    0.00    0.00    0.23    0.00    0.23    0.00
+   19-  20      514.2716 (E2g)   20.97   20.97    0.00   20.97    0.00    0.00
+   21-  21      520.0969 (A1g)    1.66    0.00    0.00    1.66    0.00    0.17
+   24-  24      954.3318 (A1g)    0.87    0.00    0.00    0.87    0.00 1000.00
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+
