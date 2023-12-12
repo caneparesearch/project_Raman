@@ -118,7 +118,7 @@ if structure_name:
         tabs = st.tabs(names)
         for i, data in enumerate(structures.values()):
             with tabs[i]:
-                show_structure(data["structure"])
+                # show_structure(data["structure"])
                 raman_IR_intensities = data["raman_IR_intensities"]
                 raman_IR_intensities.index.name='Mode'
                 raman_intensities = raman_IR_intensities[raman_IR_intensities["RAMAN"] == "A"]
