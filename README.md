@@ -1,5 +1,5 @@
 # project_Raman
-Workflow code and output for computing Raman spectroscopy and properties related to lattice vibration using CRYSTAL.
+A Database of Computed Raman Spectra of Inorganic Compounds with Accurate Hybrid Functionals. The repository includes the workflow code for computing Raman spectroscopy using CRYSTAL and the output data of Raman spectra and properties related to lattice vibration.
 ## cryoutput_parsing_databse
 *crystal_output_files* contains all CRYSTAL output files (.out) that include all the calculated thermodynamic and vibrational properties.\
 *crystal_out.py* parses the CRYSTAL output files.\
