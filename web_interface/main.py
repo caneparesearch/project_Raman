@@ -58,17 +58,16 @@ def get_convoluted_spectra(intensities_df, raman=True, sigma=1, gamma=1, wavenum
 
 def show_structure(structure):
     html = f"""
-<script src="https://chemapps.stolaf.edu/jmol/jsmol/JSmol.min.js"></script>
+<script src="web_interface\jsmol\JSmol.min.js"></script>
 <head>
     <script type="text/javascript">
-     var myJmol = 'myJmol';
-     var JmolInfo = {{
-     width:'100%',
-     height:'100%',
-     color:'#E2F4F5',
-     j2sPath:'https://chemapps.stolaf.edu/jmol/jsmol/j2s/',
-     serverURL:'https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php',
-     use:'html5'
+    var myJmol = 'myJmol';
+    var JmolInfo = {{
+    width:'100%',
+    height:'100%',
+    color:'#E2F4F5',
+    j2sPath:'web_interface/jsmol/j2s/',
+    use:'html5'
     }}
     
     $(document).ready(function(){{
@@ -118,7 +117,7 @@ if structure_name:
         tabs = st.tabs(names)
         for i, data in enumerate(structures.values()):
             with tabs[i]:
-                # show_structure(data["structure"])
+                show_structure(data["structure"])
                 raman_IR_intensities = data["raman_IR_intensities"]
                 raman_IR_intensities.index.name='Mode'
                 raman_intensities = raman_IR_intensities[raman_IR_intensities["RAMAN"] == "A"]

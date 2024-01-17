@@ -257,6 +257,8 @@ class crystalOut():
             line = self.file.readline()
         for i in range(6):
             line = self.file.readline().split()
+            if len(line) != 7:
+                raise ValueError("Error in Dielectric Tensor")
             perm = list(itertools.permutations(line[1]))
             for p in perm:
                 index1 = xyz_to_num[p[0]]
