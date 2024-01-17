@@ -95,22 +95,8 @@ def plot_convoluted_spectra(x, y, raman=True):
     fig.update_layout(xaxis1=dict(range=[start, end]), xaxis2=dict(range=[start/0.3335641E+02, end/0.3335641E+02]))
     return fig
 
-#### streamlit main page ####
-
-col1, col2 = st.columns([3,1])
-with col1:
-    st.markdown("""
-    # Main page""")
-with col2:
-    st.image("web_interface/logo-inter-color.png")
-st.sidebar.markdown("# Main page")
-
-st.title("Hybrid-Functional Computational Raman Database for Inorganic Compounds")
-
-# search bar 
-structure_name = st.text_input("Search a compound: e.g. As2Se3")
-
-if structure_name:
+def display_structure_data(data:dict):
+    # takes in the data from fetch_data_from_mongo
     structures = fetch_data_from_mongo(structure_name)
     if len(structures) > 0:
         names = [f"ICSD: {s.split('icsd')[-1]}" for s in structures.keys()]
@@ -165,3 +151,29 @@ if structure_name:
 
     else:
         st.write("We don't have Raman spectra for this compound yet.")
+
+
+#### streamlit main page ####
+col1, col2 = st.columns([3,1])
+with col1:
+    st.markdown("""
+    # Main page""")
+with col2:
+    st.image("web_interface/logo-inter-color.png")
+st.sidebar.markdown("# Main page")
+
+st.title("Hybrid-Functional Computational Raman Database for Inorganic Compounds")
+
+# search bar 
+structure_name = st.text_input("Search a compound: e.g. As2Se3", key="search_bar")
+
+# enable query by url
+query = st.query_params.get_all("query")
+if query:
+    structure_name = query[0]
+
+if structure_name:
+    st.query_params.clear()
+    st.query_params["query"] = structure_name
+    display_structure_data(structure_name)
+    
