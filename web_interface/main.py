@@ -58,7 +58,7 @@ def get_convoluted_spectra(intensities_df, raman=True, sigma=1, gamma=1, wavenum
 
 def show_structure(structure):
     html = f"""
-<script src="web_interface\jsmol\JSmol.min.js"></script>
+<script src='https://ramandb.oulu.fi/ramandb/static/jsmol/JSmol.min.js' type="text/javascript"></script>
 <head>
     <script type="text/javascript">
     var myJmol = 'myJmol';
@@ -66,7 +66,7 @@ def show_structure(structure):
     width:'100%',
     height:'100%',
     color:'#E2F4F5',
-    j2sPath:'web_interface/jsmol/j2s/',
+    j2sPath:'app/static/j2s',
     use:'html5'
     }}
     
