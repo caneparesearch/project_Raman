@@ -21,5 +21,10 @@ def get_compound_list():
     return list
 
 compound_list = get_compound_list()
-df = pd.DataFrame(compound_list, columns=["Formula", "ICSD Number"])
-st.table(df)
+url_list = [["https://raman-db.streamlit.app/?query="+x[0], x[1]] for x in compound_list]
+df = pd.DataFrame(url_list, columns=["Formula", "ICSD Number"])
+st.data_editor(df, column_config={
+    "Formula": st.column_config.LinkColumn(
+        "Formula",
+        display_text=r"https://raman-db.streamlit.app/\?query=(.*)")
+}, disabled=True, width=500)
