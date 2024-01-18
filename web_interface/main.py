@@ -170,7 +170,7 @@ structure_name = st.text_input("Search a compound: e.g. As2Se3", key="search_bar
 # enable query by url
 query = st.query_params.get_all("query")
 if query:
-    structure_name = query[0]
+    display_structure_data(structure_name)
 
 if structure_name:
     st.query_params.clear()
