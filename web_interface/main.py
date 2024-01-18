@@ -95,7 +95,7 @@ def plot_convoluted_spectra(x, y, raman=True):
     fig.update_layout(xaxis1=dict(range=[start, end]), xaxis2=dict(range=[start/0.3335641E+02, end/0.3335641E+02]))
     return fig
 
-def display_structure_data(data:dict):
+def display_structure_data(structure_name):
     # takes in the data from fetch_data_from_mongo
     structures = fetch_data_from_mongo(structure_name)
     if len(structures) > 0:
@@ -163,17 +163,15 @@ with col2:
 st.sidebar.markdown("# Main page")
 
 st.title("Hybrid-Functional Computational Raman Database for Inorganic Compounds")
-
+  
 # search bar 
 structure_name = st.text_input("Search a compound: e.g. As2Se3", key="search_bar")
-
-# enable query by url
-query = st.query_params.get_all("query")
-if query:
-    display_structure_data(structure_name)
-
 if structure_name:
     st.query_params.clear()
     st.query_params["query"] = structure_name
     display_structure_data(structure_name)
-    
+else:
+    # enable query by url
+    query = st.query_params.get_all("query")
+    if query:
+        display_structure_data(query[0])
