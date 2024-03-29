@@ -166,6 +166,7 @@ st.title("Hybrid-Functional Computational Raman Database for Inorganic Compounds
   
 # search bar 
 structure_name = st.text_input("Search a compound: e.g. As2Se3", key="search_bar")
+st.write("Our paper is published in Scientific Data: https://www.nature.com/articles/s41597-024-02924-x")
 if structure_name:
     st.query_params.clear()
     st.query_params["query"] = structure_name
