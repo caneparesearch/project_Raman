@@ -1,0 +1,71 @@
+
+ CONVERSION FACTORS FOR FREQUENCIES:
+      1 CM**(-1) =   0.4556335E-05 HARTREE
+      1 THZ      =   0.3335641E+02 CM**(-1)
+
+ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+    MODES         EIGV          FREQUENCIES     IRREP  IR   INTENS    RAMAN
+             (HARTREE**2)   (CM**-1)     (THZ)             (KM/MOL)
+    1-   2   -0.1190E-21      0.0000    0.0000  (Eu )   A (     0.00)   I
+    3-   3   -0.8922E-22      0.0000    0.0000  (A2u)   A (     0.00)   I
+    4-   5    0.5320E-07     50.6210    1.5176  (Eg )   I (     0.00)   A
+    6-   6    0.5619E-06    164.5124    4.9320  (A2u)   A (  9294.67)   I
+    7-   8    0.1804E-05    294.8218    8.8385  (Eu )   A (  4857.79)   I
+    9-   9    0.2031E-04    989.2021   29.6555  (A1g)   I (     0.00)   A
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+ RAMAN INTENSITIES UNDER PLACZECK APPROXIMATION ARE COMPUTED AS:
+
+  DIRECTIONAL (SINGLE CRYSTAL) :
+
+     I_ij(n)= VOLUME*X(n,i,j)**2
+
+  ISOTROPIC (POLYCRYSTALLINE POWDERS, GASES) :
+
+     G_0(n) = 1/3*(SUM_i X(n,i,i))**2
+     G_1(n) = 1/2*SUM_i,j (X(n,i,j)+X(n,j,i))**2
+     G_2(n) = 1/3*SUM_i,j (X(n,i,i)-X(n,j,j))**2
+
+     I_par(n)  = VOLUME*( 15*G_0(n) + 6*(G_1(n) + G_2(n)) )
+     I_perp(n) = VOLUME*9/2*( G_1(n) + G_2(n) )
+     I_tot(n)  = I_par(n) + I_perp(n)
+
+  WHERE X(n,i,j) IS THE i,j-th COMPONENT OF THE RAMAN TENSOR
+  IN THE BASIS OF NORMAL MODE n
+
+  ALL VALUES ARE NORMALIZED TO THE MOST INTENSE PEAK
+
+
+  INTENSITIES HAVE BEEN CALCULATED AT 
+  TEMPERATURE                  :    298.0 K
+  FREQUENCY OF INCOMING LASER  :    514.0 NM
+
+
+ REFERENCES TO BE QUOTED FOR RAMAN INTENSITIES:
+
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164101 (2013)
+ L.MASCHIO, B.KIRTMAN, M.RERAT, R.ORLANDO and R.DOVESI, JCP 139, 164102 (2013)
+
+  --
+  POLYCRYSTALLINE ISOTROPIC INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES           I_tot     I_par    I_perp
+  ----------------------------------------------------------------
+    4-   5       50.6210 (Eg )   1000.00    571.43    428.57
+    9-   9      989.2021 (A1g)     74.86     59.54     15.31
+
+  --
+  SINGLE CRYSTAL DIRECTIONAL INTENSITIES (ARBITRARY UNITS)
+
+    MODES    FREQUENCIES          I_xx    I_xy    I_xz    I_yy    I_yz    I_zz
+  ----------------------------------------------------------------------------
+    4-   5       50.6210 (Eg )    0.00    0.00 1000.00    0.00 1000.00    0.00
+    9-   9      989.2021 (A1g)    1.35    0.00    0.00    1.35    0.00  249.78
+
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+ <RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN><RAMAN>
+
+
