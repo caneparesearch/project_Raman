@@ -20,3 +20,5 @@ jobs:
       - name: execute py script # run file
         run: |
           python cryoutput_parsing_database/mongo.py
+        env: 
+          SECRET_URI: ${{ secrets.SECRET_URI }}
