@@ -24,8 +24,8 @@ def crystal_mongo_drone():
     for s in all_crystal_outputs:
         name = s.split("calc-")[-1].split("_tzvp")[0]
         print("Working on", name)
-        if name == "CoS2_205_icsd86351" or name == "CaF2_225_icsd60559" or name == "K4P3_63_icsd64625": # dielctric tensor got problem
-            continue
+        # if name == "CoS2_205_icsd86351" or name == "CaF2_225_icsd60559" or name == "K4P3_63_icsd64625": # dielctric tensor got problem
+        #     continue
 
         myquery = { "structure_name": { "$regex": f'^{name}' } }
         if structures.count_documents(myquery, limit = 1) == 0:
@@ -66,34 +66,6 @@ def crystal_mongo_drone():
             structure_id = structures.insert_one(structure).inserted_id
             print("Done", structure_id)
     print("Errors:\n", "\n".join(errors))
-
-
-def load_structure_from_mongo(structure_name):  
-    uri = "mongodb+srv://RamanML:CaReRamanProject00@ramanml.utaye2e.mongodb.net/?retryWrites=true&w=majority"
-    mc = MongoClient(uri)
-    db = mc["raman_ml"]
-    structures = db.structures
-    myquery = { "structure_name": { "$regex": f"^{structure_name}" } }
-    #structure_name_out = structure_name + ".out"
-    doc = structures.find(myquery)
-
-    data = []
-    for s in doc:
-        structure = Structure.from_dict(json.loads(s["structure"]))
-        space_group = s["space_group"]
-        thermodynamic_terms = json.loads(s["thermodynamic_terms"])
-        raman_intensities = json.loads(s["raman_intensities"])
-
-        dielectric_tensor = pickle.loads(s["dielectric_tensor"])
-        vib_contributions_dielectric = pickle.loads(s["vib_contributions_dielectric"])
-        second_electric_susceptibility = pickle.loads(s["second_electric_susceptibility"])
-        third_electric_susceptibiliy = pickle.loads(s["third_electric_susceptibiliy"])
-        born_charge = json.loads(s["born_charge"])
-        born_charge_normal_mode = pickle.loads(s["born_charge_normal_mode"])
-
-        data.append([structure, space_group, thermodynamic_terms, raman_intensities, dielectric_tensor, vib_contributions_dielectric, second_electric_susceptibility, third_electric_susceptibiliy, born_charge, born_charge_normal_mode])
-
-    return data
 
 if __name__ == '__main__':
     crystal_mongo_drone()
