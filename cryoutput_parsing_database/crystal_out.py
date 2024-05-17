@@ -258,7 +258,11 @@ class crystalOut():
         for i in range(6):
             line = self.file.readline().split()
             if len(line) != 7:
-                raise ValueError("Error in Dielectric Tensor")
+                if any(char.isdigit() for char in line[1]): # bunched up numbers in second field
+                    line.insert(1, line[1][0:2])
+                    line[2] = line[2][2:]
+                else:
+                    raise ValueError("Error in Dielectric Tensor")
             perm = list(itertools.permutations(line[1]))
             for p in perm:
                 index1 = xyz_to_num[p[0]]
@@ -280,6 +284,15 @@ class crystalOut():
             tensor[0, :] = [float(i) for i in line[1:]]
             for i in range(1, 3):
                 line = self.file.readline().split()
+                if len(line) != 3: # some numbers bunched together
+                    string = "".join(line)
+                    line = []
+                    start = 0
+                    for ind, c in enumerate(string):
+                        if c == ".":
+                            end = ind+6 if ind+6 < len(string) else None                               
+                            line.append(string[start : end])
+                            start = end
                 tensor[i, :] = [float(i) for i in line]
             vibrational_contributions[mode] = tensor
             line = self.file.readline()
@@ -287,6 +300,15 @@ class crystalOut():
         line = self.file.readline()
         for i in range(3):
             line = self.file.readline().split()
+            if len(line) != 3: # some numbers bunched together
+                string = "".join(line)
+                line = []
+                start = 0
+                for ind, c in enumerate(string):
+                    if c == ".":
+                        end = ind+6 if ind+6 < len(string) else None                               
+                        line.append(string[start : end])
+                        start = end
             dielectric_sum[i, :] = [float(i) for i in line]
         self.file.seek(0)
         return dielectric_sum, vibrational_contributions

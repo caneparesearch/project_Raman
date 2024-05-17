@@ -3,4 +3,3 @@
 .ipynb_checkpoints
 __pycache__
 secrets.toml
-mongo.py

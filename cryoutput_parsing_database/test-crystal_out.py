@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import voigt_profile
 
-Na3PS4 = crystalOut("cryoutput_parsing_database\\crystal_output_files\\calc-Cs2NaLaBr6_225_icsd426112_tzvp_PBE0\\Cs2NaLaBr6_225.out")
+Na3PS4 = crystalOut("cryoutput_parsing_database\\crystal_output_files\\calc-Zr2Si_140_icsd24717_tzvp_PBE0-DONE\\Zr2Si_140.out")
 print("structure:\n", Na3PS4.structure)
 print("space group", Na3PS4.space_group)
 print("atomic masses", Na3PS4.atomic_masses)
