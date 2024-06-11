@@ -116,7 +116,7 @@ def display_structure_data(structure_name):
                     gamma = st.slider("Gamma",help="Half-width at half-maximum of Cauchy distribution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma_raman")
                 col1, col2 = st.columns([3,1])
                 with col1:
-                    wavenumber_range = st.slider('Wavenumber range', 0.0, 1000.0, (20.0, 600.0),step=10.0,key=f"{names[i]}_range_raman")
+                    wavenumber_range = st.slider('Wavenumber range', 0.0, 1600.0, (20.0, 600.0),step=10.0,key=f"{names[i]}_range_raman")
                 frequencies, convoluted_intensities = get_convoluted_spectra(raman_intensities,raman=True,sigma=sigma,gamma=gamma,wavenumber_range=wavenumber_range)
                 spectra_fig = plot_convoluted_spectra(frequencies, convoluted_intensities)
                 container.plotly_chart(spectra_fig)
@@ -151,7 +151,7 @@ def display_structure_data(structure_name):
                     gamma_IR = st.slider("Gamma",help="Half-width at half-maximum of Cauchy distribution",min_value=0.0,max_value=10.0,value=1.0,key=f"{names[i]}_gamma_IR")
                 col1, col2 = st.columns([3,1])
                 with col1:
-                    wavenumber_range_IR = st.slider('Wavenumber range', 0.0, 1000.0, (20.0, 600.0),step=10.0,key=f"{names[i]}_range_IR")
+                    wavenumber_range_IR = st.slider('Wavenumber range', 0.0, 1600.0, (20.0, 600.0),step=10.0,key=f"{names[i]}_range_IR")
                 frequencies, convoluted_intensities = get_convoluted_spectra(IR_intensities,raman=False,sigma=sigma_IR,gamma=gamma_IR,wavenumber_range=wavenumber_range_IR)
                 ir_df = pd.DataFrame({"Frequencies":frequencies,"Intensities":convoluted_intensities})
                 with col2:
